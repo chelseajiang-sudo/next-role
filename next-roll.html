@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1814;
+  --paper: #f5f2ec;
+  --warm-gray: #b8b0a4;
+  --rule: #d4cfc8;
+  --accent: #c4593a;
+  --accent-light: #f0ded8;
+  --green: #4a7c59;
+  --green-light: #ddeae1;
+  --blue: #2d5580;
+  --blue-light: #d8e4f0;
+  --gold: #9a7c3a;
+  --gold-light: #f0e8d4;
+  --sidebar-w: 224px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Instrument Sans', sans-serif; background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); min-height: 100vh; background: var(--ink); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; padding: 32px 0; z-index: 100; overflow-y: auto; }
+.sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.sidebar-logo h1 { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--paper); line-height: 1.3; font-weight: 400; }
+.sidebar-logo span { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--warm-gray); letter-spacing: 0.18em; text-transform: uppercase; display: block; margin-top: 5px; }
+.nav-section { padding: 18px 0 0; }
+.nav-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--warm-gray); text-transform: uppercase; padding: 0 24px 8px; opacity: 0.7; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 24px; cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 400; user-select: none; }
+.nav-item:hover { color: rgba(255,255,255,0.85); background: rgba(255,255,255,0.04); }
+.nav-item.active { color: white; border-left-color: var(--accent); background: rgba(196,89,58,0.12); }
+.nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+.nav-badge { background: var(--accent); color: white; font-size: 9px; font-family: 'DM Mono', monospace; padding: 2px 6px; border-radius: 10px; margin-left: auto; min-width: 18px; text-align: center; }
+.sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid rgba(255,255,255,0.08); }
+.date-display { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--warm-gray); line-height: 2; }
+
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; }
+.page-header { padding: 28px 40px 22px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; background: var(--paper); position: sticky; top: 0; z-index: 50; }
+.page-title { font-family: 'DM Serif Display', serif; font-size: 26px; font-weight: 400; }
+.page-subtitle { font-size: 12px; color: var(--warm-gray); margin-top: 3px; }
+.header-actions { display: flex; gap: 10px; }
+.btn { padding: 8px 18px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 500; border: none; cursor: pointer; transition: all 0.15s; letter-spacing: 0.02em; }
+.btn-primary { background: var(--ink); color: white; }
+.btn-primary:hover { background: #2d2a26; transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.btn-outline:hover { border-color: var(--ink); }
+.content { padding: 28px 40px 48px; }
+
+/* PANELS */
+.panel { display: none; animation: fadeIn 0.2s ease; }
+.panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 28px; }
+.stat-card { background: white; border: 1px solid var(--rule); padding: 20px; transition: transform 0.15s, box-shadow 0.15s; }
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+.stat-value { font-family: 'DM Serif Display', serif; font-size: 38px; line-height: 1; margin-bottom: 6px; transition: transform 0.2s; }
+.stat-label { font-size: 10px; color: var(--warm-gray); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'DM Mono', monospace; }
+.stat-card.red { border-top: 3px solid var(--accent); }
+.stat-card.green { border-top: 3px solid var(--green); }
+.stat-card.blue { border-top: 3px solid var(--blue); }
+.stat-card.gold { border-top: 3px solid var(--gold); }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px; }
+
+/* CARD */
+.card { background: white; border: 1px solid var(--rule); padding: 22px; }
+.card-title { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.card-title::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+/* RESOURCES */
+.res-filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.res-filter { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 12px; border: 1px solid var(--rule); cursor: pointer; background: white; transition: all 0.15s; color: var(--warm-gray); }
+.res-filter:hover { border-color: var(--ink); color: var(--ink); }
+.res-filter.active { background: var(--ink); color: white; border-color: var(--ink); }
+.resource-section { margin-bottom: 32px; }
+.resource-school { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.school-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; padding: 3px 8px; border: 1px solid currentColor; }
+.school-badge.harvard { color: #a51c30; }
+.school-badge.mit { color: #8a0000; }
+.school-badge.cornell { color: #b31b1b; }
+.section-sep { display: flex; align-items: center; gap: 12px; margin: 20px 0 14px; }
+.section-sep span { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--warm-gray); white-space: nowrap; }
+.section-sep::before, .section-sep::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+.section-sep::before { flex: 0 0 16px; }
+.resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
+.resource-link { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border: 1px solid var(--rule); text-decoration: none; color: var(--ink); transition: all 0.15s; background: white; }
+.resource-link:hover { border-color: var(--ink); background: var(--accent-light); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.06); }
+.r-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+.r-name { font-size: 12px; font-weight: 500; }
+.r-desc { font-size: 10px; color: var(--warm-gray); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.r-cat { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; padding: 1px 5px; margin-top: 4px; display: inline-block; }
+.cat-job { background: var(--blue-light); color: var(--blue); }
+.cat-fellowship { background: var(--gold-light); color: var(--gold); }
+.cat-alumni { background: var(--green-light); color: var(--green); }
+.cat-campus { background: var(--accent-light); color: var(--accent); }
+
+/* DISCIPLINE */
+.disc-tabs { display: flex; border-bottom: 1px solid var(--rule); margin-bottom: 20px; }
+.disc-tab { padding: 10px 22px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.15s; color: var(--warm-gray); }
+.disc-tab:hover { color: var(--ink); }
+.disc-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+.disc-panel { display: none; animation: fadeIn 0.18s ease; }
+.disc-panel.active { display: block; }
+
+/* DOCS */
+.doc-list { display: flex; flex-direction: column; gap: 6px; }
+.doc-item { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border: 1px solid var(--rule); background: white; transition: border-color 0.15s; }
+.doc-item:hover { border-color: var(--ink); }
+.doc-left { display: flex; align-items: center; gap: 10px; }
+.doc-icon { font-size: 17px; }
+.doc-name { font-size: 12px; font-weight: 500; }
+.doc-meta { font-size: 10px; color: var(--warm-gray); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.doc-right { display: flex; align-items: center; gap: 8px; }
+.icon-btn { background: none; border: 1px solid var(--rule); padding: 4px 8px; cursor: pointer; font-size: 11px; transition: all 0.15s; }
+.icon-btn:hover { border-color: var(--ink); background: var(--paper); }
+.icon-btn.del:hover { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+
+/* CONTACTS */
+.email-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.email-table th { text-align: left; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warm-gray); padding: 0 10px 10px; border-bottom: 1px solid var(--rule); }
+.email-table td { padding: 9px 10px; border-bottom: 1px solid var(--rule); }
+.email-table tr:hover td { background: var(--paper); }
+.email-table tr:last-child td { border-bottom: none; }
+.contact-avatar { width: 26px; height: 26px; background: var(--ink); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; flex-shrink: 0; }
+
+/* ADD FORM */
+.add-form { display: none; background: #faf8f5; border: 1px solid var(--rule); padding: 18px; margin-bottom: 14px; }
+.add-form.open { display: block; animation: fadeIn 0.15s ease; }
+.form-row { display: grid; gap: 10px; margin-bottom: 10px; }
+.form-row-2 { grid-template-columns: 1fr 1fr; }
+.form-row-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warm-gray); }
+.form-input { padding: 8px 10px; border: 1px solid var(--rule); background: white; font-family: 'Instrument Sans', sans-serif; font-size: 12px; color: var(--ink); outline: none; transition: border-color 0.15s; }
+.form-input:focus { border-color: var(--ink); }
+.form-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+/* CALENDAR */
+.calendar-wrapper { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+.calendar-grid { background: white; border: 1px solid var(--rule); padding: 22px; }
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.cal-month { font-family: 'DM Serif Display', serif; font-size: 20px; font-weight: 400; }
+.cal-nav { display: flex; gap: 6px; }
+.cal-nav button { background: none; border: 1px solid var(--rule); padding: 5px 10px; cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; font-family: 'DM Mono', monospace; font-size: 10px; }
+.cal-nav button:hover { border-color: var(--ink); }
+.cal-days-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: 4px; }
+.cal-day-name { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); text-align: center; padding: 4px 0; }
+.cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.cal-day { min-height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 6px 3px; cursor: pointer; transition: all 0.12s; position: relative; font-size: 12px; border: 1px solid transparent; }
+.cal-day:hover { border-color: var(--rule); background: var(--paper); }
+.cal-day.today { background: var(--ink); color: white; }
+.cal-day.today:hover { background: #2d2a26; }
+.cal-day.other-month { color: #d0ccc7; pointer-events: none; }
+.cal-day.has-event::after { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); position: absolute; bottom: 4px; }
+.cal-day.today.has-event::after { background: rgba(255,255,255,0.7); }
+.cal-day.selected { border-color: var(--accent) !important; background: var(--accent-light) !important; color: var(--ink) !important; }
+
+.events-panel { background: white; border: 1px solid var(--rule); padding: 22px; overflow-y: auto; max-height: 540px; }
+.events-filter-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.events-day-label { font-family: 'DM Serif Display', serif; font-size: 16px; }
+.events-clear { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--warm-gray); cursor: pointer; text-decoration: underline; }
+.events-clear:hover { color: var(--ink); }
+.event-item { padding: 11px 0; border-bottom: 1px solid var(--rule); }
+.event-item:last-child { border-bottom: none; }
+.event-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3px; }
+.event-date-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); }
+.event-title { font-size: 12px; font-weight: 500; margin-bottom: 4px; }
+.event-type { display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; padding: 2px 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+.event-deadline { background: var(--gold-light); color: var(--gold); }
+.event-interview { background: var(--green-light); color: var(--green); }
+.event-followup { background: var(--blue-light); color: var(--blue); }
+.event-submit { background: var(--accent-light); color: var(--accent); }
+.event-networking { background: #ede8f5; color: #6b4faa; }
+
+/* JOBS TABLE */
+.jobs-table { width: 100%; border-collapse: collapse; }
+.jobs-table th { text-align: left; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warm-gray); padding: 10px 14px; border-bottom: 2px solid var(--rule); background: #faf8f5; }
+.jobs-table td { padding: 11px 14px; border-bottom: 1px solid var(--rule); font-size: 12px; vertical-align: middle; }
+.jobs-table tr:hover td { background: #faf8f5; }
+.jobs-table tr:last-child td { border-bottom: none; }
+.stage-select { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 6px; border: 1px solid transparent; cursor: pointer; background: transparent; outline: none; transition: all 0.15s; }
+.stage-select:hover { border-color: var(--rule); }
+.s-applied { background: var(--blue-light); color: var(--blue); }
+.s-interview { background: var(--green-light); color: var(--green); }
+.s-offer { background: var(--gold-light); color: var(--gold); }
+.s-rejected { background: #f0ebe9; color: #9a7070; }
+
+/* PROGRESS */
+.progress-item { margin-bottom: 14px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; }
+.p-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--warm-gray); }
+.progress-bar { height: 3px; background: var(--rule); border-radius: 2px; }
+.progress-fill { height: 100%; border-radius: 2px; transition: width 0.5s ease; }
+.fill-arch { background: var(--accent); }
+.fill-la { background: var(--green); }
+.fill-ai { background: var(--blue); }
+.fill-acad { background: var(--gold); }
+
+/* DEADLINE TABLE */
+.dl-table { width: 100%; border-collapse: collapse; }
+.dl-table th { text-align: left; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warm-gray); padding: 0 12px 10px; border-bottom: 1px solid var(--rule); }
+.dl-table td { padding: 10px 12px; border-bottom: 1px solid var(--rule); font-size: 12px; }
+.dl-table tr:hover td { background: var(--paper); }
+.dl-table tr:last-child td { border-bottom: none; }
+
+/* NOTES */
+textarea.notes-area { width: 100%; border: 1px solid var(--rule); padding: 12px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; color: var(--ink); background: white; resize: vertical; min-height: 100px; outline: none; transition: border-color 0.15s; line-height: 1.7; }
+textarea.notes-area:focus { border-color: var(--ink); }
+
+/* MODAL */
+.modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(26,24,20,0.5); z-index: 200; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+.modal-backdrop.open { display: flex; animation: fadeIn 0.15s ease; }
+.modal { background: white; padding: 32px; width: 500px; max-width: 92vw; border: 1px solid var(--rule); max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+.modal h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 22px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule); }
+
+/* EMPTY */
+.empty-state { text-align: center; padding: 40px 20px; }
+.empty-glyph { font-family: 'DM Serif Display', serif; font-size: 40px; color: var(--rule); margin-bottom: 10px; }
+.empty-state p { font-size: 12px; color: var(--warm-gray); line-height: 1.9; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 28px; right: 28px; z-index: 300; background: var(--ink); color: white; padding: 11px 18px; font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; border-left: 3px solid var(--green); animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.3s forwards; pointer-events: none; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes fadeOut { to { opacity: 0; } }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Job Search<br>Command Center</h1>
+    <span>Personal Dashboard</span>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" id="nav-overview" onclick="showPanel('overview')"><span class="nav-icon">◈</span> Overview</div>
+    <div class="nav-item" id="nav-calendar" onclick="showPanel('calendar')"><span class="nav-icon">⊟</span> Calendar <span class="nav-badge" id="badge-deadlines" style="display:none">0</span></div>
+    <div class="nav-item" id="nav-past" onclick="showPanel('past')"><span class="nav-icon">⊞</span> Applications</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">By Discipline</div>
+    <div class="nav-item" id="nav-disc-arch" onclick="showDiscPanel('arch')"><span class="nav-icon">⬡</span> Architecture</div>
+    <div class="nav-item" id="nav-disc-la" onclick="showDiscPanel('la')"><span class="nav-icon">⬡</span> Landscape Arch.</div>
+    <div class="nav-item" id="nav-disc-ai" onclick="showDiscPanel('ai')"><span class="nav-icon">⬡</span> AI / Tech</div>
+    <div class="nav-item" id="nav-disc-acad" onclick="showDiscPanel('acad')"><span class="nav-icon">⬡</span> Academia</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Resources</div>
+    <div class="nav-item" onclick="showPanel('resources'); scrollToSchool('harvard')"><span class="nav-icon">◎</span> Harvard</div>
+    <div class="nav-item" onclick="showPanel('resources'); scrollToSchool('mit')"><span class="nav-icon">◎</span> MIT</div>
+    <div class="nav-item" onclick="showPanel('resources'); scrollToSchool('cornell')"><span class="nav-icon">◎</span> Cornell</div>
+  </div>
+  <div class="sidebar-bottom"><div class="date-display" id="live-date">—</div></div>
+</nav>
+
+<main class="main">
+
+<!-- OVERVIEW -->
+<div id="panel-overview" class="panel active">
+  <div class="page-header">
+    <div><div class="page-title" id="greeting">Welcome</div><div class="page-subtitle">Here's your job search at a glance.</div></div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="openModal('add-job-modal')">+ Add Application</button>
+      <button class="btn btn-primary" onclick="openModal('add-event-modal')">+ Add Event</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="stats-row">
+      <div class="stat-card red"><div class="stat-value" id="stat-applied">0</div><div class="stat-label">Applied</div></div>
+      <div class="stat-card green"><div class="stat-value" id="stat-interview">0</div><div class="stat-label">Interviews</div></div>
+      <div class="stat-card blue"><div class="stat-value" id="stat-upcoming">0</div><div class="stat-label">Upcoming Deadlines</div></div>
+      <div class="stat-card gold"><div class="stat-value" id="stat-offer">0</div><div class="stat-label">Offers</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><div class="card-title">Recent Applications</div><div id="recent-apps"><div class="empty-state"><div class="empty-glyph">◈</div><p>No applications yet.</p></div></div></div>
+      <div class="card">
+        <div class="card-title">Progress by Discipline</div>
+        <div class="progress-item"><div class="progress-label"><span>Architecture</span><span class="p-count" id="prog-arch">0</span></div><div class="progress-bar"><div class="progress-fill fill-arch" id="bar-arch" style="width:0%"></div></div></div>
+        <div class="progress-item"><div class="progress-label"><span>Landscape Arch.</span><span class="p-count" id="prog-la">0</span></div><div class="progress-bar"><div class="progress-fill fill-la" id="bar-la" style="width:0%"></div></div></div>
+        <div class="progress-item"><div class="progress-label"><span>AI / Tech</span><span class="p-count" id="prog-ai">0</span></div><div class="progress-bar"><div class="progress-fill fill-ai" id="bar-ai" style="width:0%"></div></div></div>
+        <div class="progress-item"><div class="progress-label"><span>Academia</span><span class="p-count" id="prog-acad">0</span></div><div class="progress-bar"><div class="progress-fill fill-acad" id="bar-acad" style="width:0%"></div></div></div>
+        <div style="margin-top:16px;"><textarea class="notes-area" id="overview-notes" placeholder="Strategy notes, priorities, thoughts…" oninput="saveNote('overview',this.value)"></textarea></div>
+      </div>
+    </div>
+    <div class="card"><div class="card-title">Upcoming Events & Deadlines</div><table class="dl-table"><thead><tr><th>Event</th><th>Date</th><th>Type</th><th></th></tr></thead><tbody id="dl-tbody"></tbody></table></div>
+  </div>
+</div>
+
+<!-- RESOURCES -->
+<div id="panel-resources" class="panel">
+  <div class="page-header"><div><div class="page-title">Resources</div><div class="page-subtitle">Harvard · MIT · Cornell — Jobs, Fellowships, Alumni Networks</div></div></div>
+  <div class="content">
+    <div class="res-filter-bar">
+      <button class="res-filter active" data-f="all" onclick="filterRes('all')">All</button>
+      <button class="res-filter" data-f="job" onclick="filterRes('job')">Job Portals</button>
+      <button class="res-filter" data-f="fellowship" onclick="filterRes('fellowship')">Fellowships & Grants</button>
+      <button class="res-filter" data-f="alumni" onclick="filterRes('alumni')">Alumni</button>
+      <button class="res-filter" data-f="campus" onclick="filterRes('campus')">Campus</button>
+    </div>
+
+    <div class="resource-section" id="harvard-section">
+      <div class="resource-school">Harvard University <span class="school-badge harvard">Harvard</span></div>
+      <div class="section-sep" data-s="job"><span>Job Portals</span></div>
+      <div class="resource-grid">
+        <a class="resource-link" href="https://academicpositions.harvard.edu/" target="_blank" data-rc="job"><span class="r-icon">🎓</span><div><div class="r-name">Harvard Academic Positions</div><div class="r-desc">Faculty & research jobs</div><span class="r-cat cat-job">Job</span></div></a>
+        <a class="resource-link" href="https://gsd-harvard-csm.symplicity.com/students/app/home" target="_blank" data-rc="job"><span class="r-icon">🏛</span><div><div class="r-name">GSD Create</div><div class="r-desc">GSD career management portal</div><span class="r-cat cat-job">Job</span></div></a>
+        <a class="resource-link" href="https://seas.harvard.edu/faculty?research[411]=411&sort_by=field_last_name" target="_blank" data-rc="campus"><span class="r-icon">🔬</span><div><div class="r-name">SEAS Faculty Directory</div><div class="r-desc">Research assistant leads</div><span class="r-cat cat-campus">Campus</span></div></a>
+      </div>
+      <div class="section-sep" data-s="fellowship"><span>Fellowships & Grants</span></div>
+      <div class="resource-grid">
+        <a class="resource-link" href="https://carat.fas.harvard.edu/applicant/index" target="_blank" data-rc="fellowship"><span class="r-icon">📜</span><div><div class="r-name">FAS CARAT</div><div class="r-desc">Faculty of Arts & Sciences grants</div><span class="r-cat cat-fellowship">Fellowship</span></div></a>
+        <a class="resource-link" href="https://guides.library.harvard.edu/gsd/write/grant-funding" target="_blank" data-rc="fellowship"><span class="r-icon">📚</span><div><div class="r-name">GSD Grants Guide</div><div class="r-desc">Library grant-funding resources</div><span class="r-cat cat-fellowship">Grant</span></div></a>
+        <a class="resource-link" href="https://www.gsd.harvard.edu/resources/scholarships-for-international-students/" target="_blank" data-rc="fellowship"><span class="r-icon">🌐</span><div><div class="r-name">International Scholarships</div><div class="r-desc">GSD outside scholarships</div><span class="r-cat cat-fellowship">Fellowship</span></div></a>
+        <a class="resource-link" href="https://spin-infoedglobal-com.us1.proxy.openathens.net/Home/SOLRSearch" target="_blank" data-rc="fellowship"><span class="r-icon">🔍</span><div><div class="r-name">SPIN Database</div><div class="r-desc">Grant search (Harvard proxy)</div><span class="r-cat cat-fellowship">Grant</span></div></a>
+      </div>
+      <div class="section-sep" data-s="alumni"><span>Alumni Network</span></div>
+      <div class="resource-grid">
+        <a class="resource-link" href="https://alumni.harvard.edu/community" target="_blank" data-rc="alumni"><span class="r-icon">🤝</span><div><div class="r-name">Harvard Alumni Assoc.</div><div class="r-desc">HAA community hub</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://community.alumni.harvard.edu/forum/messageboard?category=2" target="_blank" data-rc="job"><span class="r-icon">📢</span><div><div class="r-name">HAA Daily Job Board</div><div class="r-desc">Daily alumni job posts</div><span class="r-cat cat-job">Job</span></div></a>
+        <a class="resource-link" href="https://community.alumni.harvard.edu/forum/newmessage" target="_blank" data-rc="alumni"><span class="r-icon">✏️</span><div><div class="r-name">Post a Job (HAA)</div><div class="r-desc">Share opportunities with alumni</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://alumni.harvard.edu/community/clubs-sigs/sigs-directory" target="_blank" data-rc="alumni"><span class="r-icon">📁</span><div><div class="r-name">SIGs Directory</div><div class="r-desc">Shared interest groups</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://www.haaus.org/" target="_blank" data-rc="alumni"><span class="r-icon">🏗</span><div><div class="r-name">HAAUS</div><div class="r-desc">Harvard Alumni Arch. & Urban Society</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://www.harvardintech.com/" target="_blank" data-rc="alumni"><span class="r-icon">💻</span><div><div class="r-name">Harvard Alumni in Tech</div><div class="r-desc">Technology alumni network</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+      </div>
+    </div>
+
+    <div class="resource-section" id="mit-section" style="margin-top:32px;">
+      <div class="resource-school">MIT <span class="school-badge mit">MIT</span></div>
+      <div class="resource-grid">
+        <a class="resource-link" href="https://careers.mit.edu/" target="_blank" data-rc="job"><span class="r-icon">⚙️</span><div><div class="r-name">MIT Career Office</div><div class="r-desc">Career development & jobs</div><span class="r-cat cat-job">Job</span></div></a>
+        <a class="resource-link" href="https://alum.mit.edu/" target="_blank" data-rc="alumni"><span class="r-icon">🎓</span><div><div class="r-name">MIT Alumni Association</div><div class="r-desc">Alum network & resources</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://architecture.mit.edu/" target="_blank" data-rc="campus"><span class="r-icon">🏛</span><div><div class="r-name">MIT School of Architecture</div><div class="r-desc">SA+P opportunities</div><span class="r-cat cat-campus">Campus</span></div></a>
+      </div>
+    </div>
+
+    <div class="resource-section" id="cornell-section" style="margin-top:32px;">
+      <div class="resource-school">Cornell University <span class="school-badge cornell">Cornell</span></div>
+      <div class="resource-grid">
+        <a class="resource-link" href="https://aap.cornell.edu/" target="_blank" data-rc="campus"><span class="r-icon">🏛</span><div><div class="r-name">Cornell AAP</div><div class="r-desc">Architecture, Art & Planning</div><span class="r-cat cat-campus">Campus</span></div></a>
+        <a class="resource-link" href="https://alumni.cornell.edu/" target="_blank" data-rc="alumni"><span class="r-icon">🤝</span><div><div class="r-name">Cornell Alumni Network</div><div class="r-desc">Alumni association</div><span class="r-cat cat-alumni">Alumni</span></div></a>
+        <a class="resource-link" href="https://gradschool.cornell.edu/financial-support/fellowships/" target="_blank" data-rc="fellowship"><span class="r-icon">📜</span><div><div class="r-name">Cornell Fellowships</div><div class="r-desc">Grad school funding</div><span class="r-cat cat-fellowship">Fellowship</span></div></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DISCIPLINE -->
+<div id="panel-discipline" class="panel">
+  <div class="page-header">
+    <div><div class="page-title" id="disc-panel-title">Architecture</div><div class="page-subtitle">Documents, contacts, and notes by discipline.</div></div>
+    <div class="header-actions">
+      <button class="btn btn-outline" onclick="openModal('add-contact-modal')">+ Add Contact</button>
+      <button class="btn btn-primary" onclick="toggleAddDocForm()">+ Add Document</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="disc-tabs">
+      <div class="disc-tab active" id="tab-arch" onclick="switchDisc('arch')">Architecture</div>
+      <div class="disc-tab" id="tab-la" onclick="switchDisc('la')">Landscape Arch.</div>
+      <div class="disc-tab" id="tab-ai" onclick="switchDisc('ai')">AI / Tech</div>
+      <div class="disc-tab" id="tab-acad" onclick="switchDisc('acad')">Academia</div>
+    </div>
+    <div class="add-form" id="add-doc-form">
+      <div class="form-row form-row-3">
+        <div class="form-group"><label class="form-label">Document Name</label><input class="form-input" id="doc-name-input" placeholder="CV_Architecture_2025…" /></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="doc-type-input"><option>CV</option><option>Portfolio</option><option>Cover Letter</option><option>Website</option><option>Other</option></select></div>
+        <div class="form-group"><label class="form-label">Status</label><select class="form-input" id="doc-status-input"><option value="draft">Draft</option><option value="ready">Ready</option><option value="sent">Sent</option></select></div>
+      </div>
+      <div class="form-actions"><button class="btn btn-primary" onclick="addDoc()">Save Document</button><button class="btn btn-outline" onclick="toggleAddDocForm()">Cancel</button></div>
+    </div>
+    <div class="disc-panel active" id="disc-arch"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-arch"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-arch"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-arch" placeholder="Target firms, strategy, talking points…" oninput="saveNote('arch',this.value)"></textarea></div></div>
+    <div class="disc-panel" id="disc-la"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-la"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-la"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-la" placeholder="Target firms, ecological focus, conferences…" oninput="saveNote('la',this.value)"></textarea></div></div>
+    <div class="disc-panel" id="disc-ai"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-ai"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-ai"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-ai" placeholder="GitHub, LinkedIn, research interests, target companies…" oninput="saveNote('ai',this.value)"></textarea></div></div>
+    <div class="disc-panel" id="disc-acad"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-acad"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Institution</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-acad"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-acad" placeholder="Research statement, target positions, conferences…" oninput="saveNote('acad',this.value)"></textarea></div></div>
+  </div>
+</div>
+
+<!-- CALENDAR -->
+<div id="panel-calendar" class="panel">
+  <div class="page-header">
+    <div><div class="page-title">Calendar Planner</div><div class="page-subtitle">Deadlines, interviews, follow-ups — all in one place.</div></div>
+    <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-event-modal')">+ Add Event</button></div>
+  </div>
+  <div class="content">
+    <div class="calendar-wrapper">
+      <div class="calendar-grid">
+        <div class="cal-header">
+          <div class="cal-month" id="cal-month-label">February 2026</div>
+          <div class="cal-nav">
+            <button onclick="changeMonth(-1)">‹</button>
+            <button onclick="goToToday()" style="font-size:9px;letter-spacing:0.08em;">TODAY</button>
+            <button onclick="changeMonth(1)">›</button>
+          </div>
+        </div>
+        <div class="cal-days-header">
+          <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div><div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div><div class="cal-day-name">Sat</div>
+        </div>
+        <div class="cal-days" id="cal-days"></div>
+      </div>
+      <div class="events-panel">
+        <div class="events-filter-bar">
+          <div class="card-title" style="margin:0" id="events-panel-label">All Events</div>
+          <span class="events-clear" id="events-clear-btn" onclick="clearCalFilter()" style="display:none">✕ Clear</span>
+        </div>
+        <div id="events-list"></div>
+        <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--rule);">
+          <div class="card-title" style="margin-bottom:10px;">Legend</div>
+          <div style="display:flex;flex-direction:column;gap:7px;font-size:11px;color:var(--warm-gray);">
+            <span><span class="event-type event-deadline">Deadline</span> Application due</span>
+            <span><span class="event-type event-interview">Interview</span> Scheduled call</span>
+            <span><span class="event-type event-followup">Follow-up</span> Check in</span>
+            <span><span class="event-type event-submit">Submit</span> Submit documents</span>
+            <span><span class="event-type event-networking">Networking</span> Event / meeting</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAST APPLICATIONS -->
+<div id="panel-past" class="panel">
+  <div class="page-header">
+    <div><div class="page-title">Applications</div><div class="page-subtitle">Track every application, stage, and outcome.</div></div>
+    <div class="header-actions"><button class="btn btn-primary" onclick="openModal('add-job-modal')">+ Add Application</button></div>
+  </div>
+  <div class="content">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <table class="jobs-table">
+        <thead><tr><th>Position</th><th>Organization</th><th>Discipline</th><th>Date Applied</th><th>Stage</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="jobs-tbody"></tbody>
+      </table>
+      <div id="jobs-empty" style="display:none;"><div class="empty-state"><div class="empty-glyph">◈</div><p>No applications yet.<br>Click "+ Add Application" to start.</p></div></div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- MODALS -->
+<div class="modal-backdrop" id="add-job-modal">
+  <div class="modal">
+    <h2>Add Application</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Position / Role</label><input class="form-input" id="job-title" placeholder="e.g. Junior Architect" /></div>
+        <div class="form-group"><label class="form-label">Organization</label><input class="form-input" id="job-org" placeholder="e.g. Snøhetta, Harvard GSD…" /></div>
+      </div>
+      <div class="form-row form-row-3">
+        <div class="form-group"><label class="form-label">Discipline</label><select class="form-input" id="job-discipline"><option value="arch">Architecture</option><option value="la">Landscape Architecture</option><option value="ai">AI / Tech</option><option value="acad">Academia</option></select></div>
+        <div class="form-group"><label class="form-label">Stage</label><select class="form-input" id="job-stage"><option value="applied">Applied</option><option value="interview">Interview</option><option value="offer">Offer</option><option value="rejected">Rejected</option></select></div>
+        <div class="form-group"><label class="form-label">Date Applied</label><input class="form-input" type="date" id="job-date" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><textarea class="notes-area" id="job-notes" style="min-height:70px;" placeholder="Referrals, requirements, follow-up dates…"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModals()">Cancel</button><button class="btn btn-primary" onclick="saveJob()">Save Application</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="add-contact-modal">
+  <div class="modal">
+    <h2>Add Contact</h2>
+    <input type="hidden" id="contact-disc" value="arch" />
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Discipline</label><select class="form-input" id="contact-disc-sel" onchange="document.getElementById('contact-disc').value=this.value"><option value="arch">Architecture</option><option value="la">Landscape Arch.</option><option value="ai">AI / Tech</option><option value="acad">Academia</option></select></div>
+        <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="contact-name" placeholder="Full name" /></div>
+      </div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Organization</label><input class="form-input" id="contact-org" placeholder="Firm, school, company…" /></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="contact-email" type="email" placeholder="email@example.com" /></div>
+      </div>
+      <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="contact-notes" placeholder="How you met, follow-up needed…" /></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModals()">Cancel</button><button class="btn btn-primary" onclick="saveContact()">Save Contact</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="add-event-modal">
+  <div class="modal">
+    <h2>Add Event / Deadline</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" id="event-title" placeholder="e.g. GSD Fellowship Deadline" /></div>
+      <div class="form-row form-row-2">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="event-date" /></div>
+        <div class="form-group"><label class="form-label">Type</label><select class="form-input" id="event-type-sel"><option value="deadline">Deadline</option><option value="interview">Interview</option><option value="followup">Follow-up</option><option value="submit">Submit</option><option value="networking">Networking</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeModals()">Cancel</button><button class="btn btn-primary" onclick="saveEvent()">Save Event</button></div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function toast(msg,color) { const e=document.querySelector('.toast'); if(e)e.remove(); const t=document.createElement('div'); t.className='toast'; if(color) t.style.borderLeftColor=color; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),2700); }
+
+// ─────────────────────────────────────────────
+// STATE + LOCALSTORAGE
+// ─────────────────────────────────────────────
+const SK = 'jsc_v2';
+function load() { try { const r=localStorage.getItem(SK); if(r) return JSON.parse(r); } catch(e){} return null; }
+function save() { try { localStorage.setItem(SK,JSON.stringify(S)); } catch(e){} }
+
+const DEFAULTS = {
+  jobs:[], events:[
+    {id:uid(),title:'GSD Fellowship Applications Open',date:'2026-03-01',type:'deadline'},
+    {id:uid(),title:'HAAUS Networking Event',date:'2026-03-15',type:'networking'},
+    {id:uid(),title:'HAA Daily Job Posts — Check Forum',date:'',type:'followup'},
+  ],
+  contacts:{arch:[],la:[],ai:[],acad:[]},
+  docs:{
+    arch:[{id:uid(),name:'Architecture CV',type:'CV',status:'draft'},{id:uid(),name:'Architecture Portfolio',type:'Portfolio',status:'draft'},{id:uid(),name:'Cover Letter Template',type:'Cover Letter',status:'draft'}],
+    la:[{id:uid(),name:'Landscape Arch. CV',type:'CV',status:'draft'},{id:uid(),name:'LA Portfolio',type:'Portfolio',status:'draft'},{id:uid(),name:'Cover Letter — LA',type:'Cover Letter',status:'draft'}],
+    ai:[{id:uid(),name:'Personal Website',type:'Website',status:'draft'},{id:uid(),name:'AI / Tech CV',type:'CV',status:'draft'}],
+    acad:[{id:uid(),name:'Academic CV',type:'CV',status:'draft'}]
+  },
+  notes:{overview:'',arch:'',la:'',ai:'',acad:''},
+  calYear:new Date().getFullYear(), calMonth:new Date().getMonth(),
+  activeDisc:'arch'
+};
+
+const stored = load();
+const S = stored ? {
+  ...DEFAULTS,...stored,
+  contacts:{...DEFAULTS.contacts,...(stored.contacts||{})},
+  docs:{...DEFAULTS.docs,...(stored.docs||{})},
+  notes:{...DEFAULTS.notes,...(stored.notes||{})}
+} : {...DEFAULTS};
+
+// ─────────────────────────────────────────────
+// NAVIGATION
+// ─────────────────────────────────────────────
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('nav-'+name);
+  if(el) el.classList.add('active');
+}
+
+function showDiscPanel(disc) {
+  showPanel('discipline');
+  switchDisc(disc);
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const el=document.getElementById('nav-disc-'+disc);
+  if(el) el.classList.add('active');
+}
+
+function switchDisc(disc) {
+  document.querySelectorAll('.disc-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.disc-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('disc-'+disc).classList.add('active');
+  document.getElementById('tab-'+disc).classList.add('active');
+  const titles={arch:'Architecture',la:'Landscape Architecture',ai:'AI / Tech',acad:'Academia'};
+  document.getElementById('disc-panel-title').textContent = titles[disc];
+  S.activeDisc=disc;
+  document.getElementById('contact-disc').value=disc;
+  document.getElementById('contact-disc-sel').value=disc;
+  renderDocs(disc); renderContacts(disc);
+  const ta=document.getElementById('notes-'+disc);
+  if(ta) ta.value=S.notes[disc]||'';
+  save();
+}
+
+// ─────────────────────────────────────────────
+// GREETING + DATE
+// ─────────────────────────────────────────────
+function initGreeting() {
+  const h=new Date().getHours();
+  const g = h<12?'Good morning ☀':h<17?'Good afternoon 🌤':'Good evening 🌙';
+  document.getElementById('greeting').textContent=g;
+  const now=new Date();
+  document.getElementById('live-date').innerHTML = now.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}).replace(',','<br>');
+}
+
+// ─────────────────────────────────────────────
+// STATS
+// ─────────────────────────────────────────────
+function updateStats() {
+  const applied=S.jobs.length;
+  const interviews=S.jobs.filter(j=>j.stage==='interview').length;
+  const offers=S.jobs.filter(j=>j.stage==='offer').length;
+  const now=new Date(); now.setHours(0,0,0,0);
+  const upcoming=S.events.filter(e=>{if(!e.date)return false;const d=new Date(e.date+'T00:00:00');d.setHours(0,0,0,0);return d>=now;}).length;
+  animN('stat-applied',applied);
+  animN('stat-interview',interviews);
+  animN('stat-upcoming',upcoming);
+  animN('stat-offer',offers);
+  const badge=document.getElementById('badge-deadlines');
+  if(upcoming>0){badge.textContent=upcoming;badge.style.display='inline-block';}else{badge.style.display='none';}
+  const counts={arch:0,la:0,ai:0,acad:0};
+  S.jobs.forEach(j=>counts[j.disc]=(counts[j.disc]||0)+1);
+  const mx=Math.max(...Object.values(counts),1);
+  ['arch','la','ai','acad'].forEach(d=>{
+    document.getElementById('prog-'+d).textContent=counts[d]||0;
+    document.getElementById('bar-'+d).style.width=((counts[d]||0)/mx*100)+'%';
+  });
+}
+function animN(id,val) {
+  const el=document.getElementById(id); if(!el)return;
+  const cur=parseInt(el.textContent)||0; if(cur===val)return;
+  el.textContent=val; el.style.transform='scale(1.18)';
+  setTimeout(()=>el.style.transform='scale(1)',220);
+}
+
+// ─────────────────────────────────────────────
+// OVERVIEW DEADLINES
+// ─────────────────────────────────────────────
+function renderOverviewDeadlines() {
+  const tbody=document.getElementById('dl-tbody');
+  const now=new Date(); now.setHours(0,0,0,0);
+  const tmap={deadline:'event-deadline',interview:'event-interview',followup:'event-followup',submit:'event-submit',networking:'event-networking'};
+  const lmap={deadline:'Deadline',interview:'Interview',followup:'Follow-up',submit:'Submit',networking:'Networking'};
+  const upcoming=S.events.filter(e=>e.date).map(e=>({...e,_d:new Date(e.date+'T00:00:00')})).filter(e=>{const d=new Date(e.date+'T00:00:00');d.setHours(0,0,0,0);return d>=now;}).sort((a,b)=>a._d-b._d);
+  if(!upcoming.length){
+    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--warm-gray);font-size:12px;">No upcoming events. Add some from the Calendar.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=upcoming.map(e=>`<tr>
+    <td style="font-weight:500;">${e.title}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:11px;">${e._d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+    <td><span class="event-type ${tmap[e.type]||''}">${lmap[e.type]||e.type}</span></td>
+    <td><button class="icon-btn del" onclick="deleteEvent('${e.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// CALENDAR
+// ─────────────────────────────────────────────
+let calFilterDay=null;
+
+function renderCalendar() {
+  const {calYear:yr,calMonth:mo}=S;
+  const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent=`${monthNames[mo]} ${yr}`;
+  const firstDay=new Date(yr,mo,1).getDay();
+  const daysInMonth=new Date(yr,mo+1,0).getDate();
+  const daysInPrev=new Date(yr,mo,0).getDate();
+  const today=new Date();
+  const evDays={};
+  S.events.forEach(e=>{
+    if(!e.date)return;
+    const d=new Date(e.date+'T00:00:00');
+    if(d.getFullYear()===yr&&d.getMonth()===mo) evDays[d.getDate()]=true;
+  });
+  const c=document.getElementById('cal-days'); c.innerHTML='';
+  for(let i=firstDay-1;i>=0;i--){const d=document.createElement('div');d.className='cal-day other-month';d.textContent=daysInPrev-i;c.appendChild(d);}
+  for(let i=1;i<=daysInMonth;i++){
+    const d=document.createElement('div'); d.className='cal-day';
+    const isT=today.getFullYear()===yr&&today.getMonth()===mo&&today.getDate()===i;
+    if(isT) d.classList.add('today');
+    if(evDays[i]) d.classList.add('has-event');
+    if(calFilterDay===i) d.classList.add('selected');
+    d.textContent=i;
+    const day=i;
+    d.onclick=()=>selectCalDay(day);
+    c.appendChild(d);
+  }
+  const total=firstDay+daysInMonth; const rem=total%7===0?0:7-(total%7);
+  for(let i=1;i<=rem;i++){const d=document.createElement('div');d.className='cal-day other-month';d.textContent=i;c.appendChild(d);}
+  renderEvents();
+}
+
+function selectCalDay(day) {
+  calFilterDay = calFilterDay===day ? null : day;
+  renderCalendar();
+  const clrBtn=document.getElementById('events-clear-btn');
+  const lbl=document.getElementById('events-panel-label');
+  if(calFilterDay){
+    const mns=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    lbl.textContent=`${mns[S.calMonth]} ${calFilterDay}`;
+    clrBtn.style.display='inline';
+  } else { lbl.textContent='All Events'; clrBtn.style.display='none'; }
+}
+
+function clearCalFilter(){calFilterDay=null;renderCalendar();document.getElementById('events-panel-label').textContent='All Events';document.getElementById('events-clear-btn').style.display='none';}
+function changeMonth(dir){S.calMonth+=dir;if(S.calMonth<0){S.calMonth=11;S.calYear--;}if(S.calMonth>11){S.calMonth=0;S.calYear++;}calFilterDay=null;save();renderCalendar();}
+function goToToday(){S.calYear=new Date().getFullYear();S.calMonth=new Date().getMonth();calFilterDay=null;save();renderCalendar();}
+
+function renderEvents() {
+  const tmap={deadline:'event-deadline',interview:'event-interview',followup:'event-followup',submit:'event-submit',networking:'event-networking'};
+  const lmap={deadline:'Deadline',interview:'Interview',followup:'Follow-up',submit:'Submit',networking:'Networking'};
+  const list=document.getElementById('events-list');
+  let filtered=[...S.events];
+  if(calFilterDay!==null){
+    filtered=filtered.filter(e=>{
+      if(!e.date)return false;
+      const d=new Date(e.date+'T00:00:00');
+      return d.getFullYear()===S.calYear&&d.getMonth()===S.calMonth&&d.getDate()===calFilterDay;
+    });
+  }
+  filtered.sort((a,b)=>{if(!a.date)return 1;if(!b.date)return -1;return new Date(a.date)-new Date(b.date);});
+  if(!filtered.length){
+    list.innerHTML=`<div class="empty-state" style="padding:20px 0;"><div class="empty-glyph" style="font-size:28px;">—</div><p>${calFilterDay?'No events on this day.':'No events yet.'}</p></div>`;
+    return;
+  }
+  list.innerHTML=filtered.map(e=>`<div class="event-item">
+    <div class="event-header">
+      <div class="event-date-label">${e.date?new Date(e.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'TBD'}</div>
+      <button class="icon-btn del" style="font-size:10px;padding:2px 6px;" onclick="deleteEvent('${e.id}')">✕</button>
+    </div>
+    <div class="event-title">${e.title}</div>
+    <span class="event-type ${tmap[e.type]||''}">${lmap[e.type]||e.type}</span>
+  </div>`).join('');
+}
+
+function saveEvent(){
+  const title=document.getElementById('event-title').value.trim();
+  if(!title){toast('Please enter an event title.','#c4593a');return;}
+  S.events.push({id:uid(),title,date:document.getElementById('event-date').value,type:document.getElementById('event-type-sel').value});
+  save();closeModals();document.getElementById('event-title').value='';
+  renderCalendar();renderOverviewDeadlines();updateStats();toast('Event saved.');
+}
+function deleteEvent(id){
+  S.events=S.events.filter(e=>e.id!==id);
+  save();renderCalendar();renderOverviewDeadlines();updateStats();toast('Event removed.','#9a7c3a');
+}
+
+// ─────────────────────────────────────────────
+// JOBS
+// ─────────────────────────────────────────────
+function saveJob(){
+  const title=document.getElementById('job-title').value.trim();
+  const org=document.getElementById('job-org').value.trim();
+  if(!title||!org){toast('Please fill in position and organization.','#c4593a');return;}
+  S.jobs.push({id:uid(),title,org,disc:document.getElementById('job-discipline').value,stage:document.getElementById('job-stage').value,date:document.getElementById('job-date').value,notes:document.getElementById('job-notes').value.trim()});
+  save();closeModals();
+  ['job-title','job-org','job-date','job-notes'].forEach(i=>document.getElementById(i).value='');
+  renderJobs();renderRecentApps();updateStats();toast('Application saved.');
+}
+function deleteJob(id){S.jobs=S.jobs.filter(j=>j.id!==id);save();renderJobs();renderRecentApps();updateStats();toast('Removed.','#9a7c3a');}
+function updateJobStage(id,v){const j=S.jobs.find(j=>j.id===id);if(j){j.stage=v;save();updateStats();renderRecentApps();}}
+
+const discMap={arch:'Architecture',la:'Landscape Arch.',ai:'AI / Tech',acad:'Academia'};
+const sColor={applied:'s-applied',interview:'s-interview',offer:'s-offer',rejected:'s-rejected'};
+
+function stageSelect(id,cur) {
+  return `<select class="stage-select ${sColor[cur]||''}" onchange="updateJobStage('${id}',this.value);this.className='stage-select s-'+this.value;">
+    <option value="applied" ${cur==='applied'?'selected':''}>Applied</option>
+    <option value="interview" ${cur==='interview'?'selected':''}>Interview</option>
+    <option value="offer" ${cur==='offer'?'selected':''}>Offer</option>
+    <option value="rejected" ${cur==='rejected'?'selected':''}>Rejected</option>
+  </select>`;
+}
+
+function renderJobs(){
+  const tbody=document.getElementById('jobs-tbody');
+  const empty=document.getElementById('jobs-empty');
+  if(!S.jobs.length){tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  tbody.innerHTML=S.jobs.slice().reverse().map(j=>`<tr>
+    <td style="font-weight:500;">${j.title}</td>
+    <td style="color:var(--warm-gray);">${j.org}</td>
+    <td style="font-size:11px;">${discMap[j.disc]||j.disc}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:10px;">${j.date||'—'}</td>
+    <td>${stageSelect(j.id,j.stage)}</td>
+    <td style="font-size:11px;color:var(--warm-gray);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${j.notes||''}">${j.notes||'—'}</td>
+    <td><button class="icon-btn del" onclick="deleteJob('${j.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+function renderRecentApps(){
+  const el=document.getElementById('recent-apps');
+  if(!S.jobs.length){el.innerHTML=`<div class="empty-state" style="padding:24px 0;"><div class="empty-glyph" style="font-size:32px;">◈</div><p>No applications yet.</p></div>`;return;}
+  el.innerHTML=S.jobs.slice(-4).reverse().map(j=>`<div style="padding:9px 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:8px;">
+    <div><div style="font-size:13px;font-weight:500;">${j.title}</div><div style="font-size:10px;color:var(--warm-gray);font-family:'DM Mono',monospace;">${j.org}</div></div>
+    ${stageSelect(j.id,j.stage)}
+  </div>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// CONTACTS
+// ─────────────────────────────────────────────
+function saveContact(){
+  const disc=document.getElementById('contact-disc').value;
+  const name=document.getElementById('contact-name').value.trim();
+  if(!name){toast('Please enter a name.','#c4593a');return;}
+  if(!S.contacts[disc]) S.contacts[disc]=[];
+  S.contacts[disc].push({id:uid(),name,org:document.getElementById('contact-org').value.trim(),email:document.getElementById('contact-email').value.trim(),notes:document.getElementById('contact-notes').value.trim()});
+  save();closeModals();
+  ['contact-name','contact-org','contact-email','contact-notes'].forEach(i=>document.getElementById(i).value='');
+  renderContacts(disc);toast('Contact saved.');
+}
+function deleteContact(disc,id){S.contacts[disc]=S.contacts[disc].filter(c=>c.id!==id);save();renderContacts(disc);}
+function renderContacts(disc){
+  const tb=document.getElementById('contacts-'+disc); if(!tb)return;
+  const list=S.contacts[disc]||[];
+  if(!list.length){tb.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:18px;color:var(--warm-gray);font-size:12px;">No contacts. Click "+ Add Contact" above.</td></tr>`;return;}
+  tb.innerHTML=list.map(c=>`<tr>
+    <td><div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div></td>
+    <td style="font-weight:500;">${c.name}</td>
+    <td style="color:var(--warm-gray);">${c.org||'—'}</td>
+    <td><a href="mailto:${c.email}" style="color:var(--blue);font-family:'DM Mono',monospace;font-size:10px;">${c.email||'—'}</a></td>
+    <td style="color:var(--warm-gray);">${c.notes||'—'}</td>
+    <td><button class="icon-btn del" onclick="deleteContact('${disc}','${c.id}')">✕</button></td>
+  </tr>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// DOCS
+// ─────────────────────────────────────────────
+function toggleAddDocForm(){document.getElementById('add-doc-form').classList.toggle('open');}
+function addDoc(){
+  const name=document.getElementById('doc-name-input').value.trim();
+  if(!name)return;
+  const disc=S.activeDisc;
+  const type=document.getElementById('doc-type-input').value;
+  const status=document.getElementById('doc-status-input').value;
+  if(!S.docs[disc]) S.docs[disc]=[];
+  S.docs[disc].push({id:uid(),name,type,status,added:new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})});
+  save();renderDocs(disc);document.getElementById('doc-name-input').value='';toggleAddDocForm();toast('Document added.');
+}
+function deleteDoc(disc,id){S.docs[disc]=S.docs[disc].filter(d=>d.id!==id);save();renderDocs(disc);}
+function updateDocStatus(disc,id,v){const d=(S.docs[disc]||[]).find(d=>d.id===id);if(d){d.status=v;save();}}
+function renderDocs(disc){
+  const c=document.getElementById('docs-'+disc); if(!c)return;
+  const list=S.docs[disc]||[];
+  const imap={CV:'📄',Portfolio:'🖼','Cover Letter':'✉️',Website:'🌐',Other:'📁'};
+  if(!list.length){c.innerHTML=`<div class="empty-state" style="padding:16px 0;"><p>No documents yet.</p></div>`;return;}
+  c.innerHTML=list.map(d=>`<div class="doc-item">
+    <div class="doc-left">
+      <span class="doc-icon">${imap[d.type]||'📁'}</span>
+      <div><div class="doc-name">${d.name}</div><div class="doc-meta">${d.type}${d.added?' · '+d.added:''}</div></div>
+    </div>
+    <div class="doc-right">
+      <select class="form-input" style="font-size:9px;padding:3px 6px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:0.06em;" onchange="updateDocStatus('${disc}','${d.id}',this.value)">
+        <option value="draft" ${d.status==='draft'?'selected':''}>Draft</option>
+        <option value="ready" ${d.status==='ready'?'selected':''}>Ready</option>
+        <option value="sent" ${d.status==='sent'?'selected':''}>Sent</option>
+      </select>
+      <button class="icon-btn del" onclick="deleteDoc('${disc}','${d.id}')">✕</button>
+    </div>
+  </div>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// NOTES
+// ─────────────────────────────────────────────
+function saveNote(key,val){S.notes[key]=val;save();}
+function loadNotes(){
+  Object.keys(S.notes).forEach(k=>{
+    const el=document.getElementById(k==='overview'?'overview-notes':'notes-'+k);
+    if(el) el.value=S.notes[k]||'';
+  });
+}
+
+// ─────────────────────────────────────────────
+// RESOURCE FILTER
+// ─────────────────────────────────────────────
+function filterRes(cat){
+  document.querySelectorAll('.res-filter').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.res-filter[data-f="${cat}"]`).classList.add('active');
+  document.querySelectorAll('.resource-link').forEach(l=>{l.style.display=(cat==='all'||l.dataset.rc===cat)?'':'none';});
+  document.querySelectorAll('.section-sep').forEach(s=>{s.style.display=(cat==='all'||s.dataset.s===cat)?'':'none';});
+}
+function scrollToSchool(id){setTimeout(()=>{const el=document.getElementById(id+'-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},60);}
+
+// ─────────────────────────────────────────────
+// MODALS
+// ─────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModals(){document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.modal-backdrop').forEach(m=>m.onclick=e=>{if(e.target===m)closeModals();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModals();});
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+function init(){
+  initGreeting();
+  renderJobs(); renderRecentApps(); updateStats();
+  renderCalendar(); renderOverviewDeadlines();
+  loadNotes();
+  // Restore discipline
+  const disc=S.activeDisc||'arch';
+  document.querySelectorAll('.disc-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.disc-tab').forEach(t=>t.classList.remove('active'));
+  const dp=document.getElementById('disc-'+disc);
+  if(dp) dp.classList.add('active');
+  const dt=document.getElementById('tab-'+disc);
+  if(dt) dt.classList.add('active');
+  const titles={arch:'Architecture',la:'Landscape Architecture',ai:'AI / Tech',acad:'Academia'};
+  document.getElementById('disc-panel-title').textContent=titles[disc];
+  ['arch','la','ai','acad'].forEach(d=>{renderDocs(d);renderContacts(d);});
+}
+init();
+</script>
+</body>
+</html>
