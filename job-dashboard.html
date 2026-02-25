@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Search — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1814;
+  --paper: #f5f2ec;
+  --warm-gray: #b8b0a4;
+  --rule: #d4cfc8;
+  --accent: #c4593a;
+  --accent-light: #f0ded8;
+  --green: #4a7c59;
+  --green-light: #ddeae1;
+  --blue: #2d5580;
+  --blue-light: #d8e4f0;
+  --gold: #9a7c3a;
+  --gold-light: #f0e8d4;
+  --sidebar-w: 220px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0;
+  padding: 32px 0;
+  z-index: 100;
+}
+
+.sidebar-logo {
+  padding: 0 24px 32px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 18px;
+  color: var(--paper);
+  line-height: 1.3;
+  font-weight: 400;
+}
+.sidebar-logo span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--warm-gray);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 4px;
+}
+
+.nav-section {
+  padding: 20px 0 0;
+}
+.nav-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--warm-gray);
+  text-transform: uppercase;
+  padding: 0 24px 10px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+  color: rgba(255,255,255,0.55);
+  font-size: 13px;
+  font-weight: 400;
+}
+.nav-item:hover { color: white; background: rgba(255,255,255,0.04); }
+.nav-item.active { color: white; border-left-color: var(--accent); background: rgba(196,89,58,0.1); }
+.nav-icon { font-size: 14px; width: 18px; text-align: center; }
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 20px 24px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.date-display {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--warm-gray);
+  line-height: 1.8;
+}
+
+/* MAIN */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+}
+
+/* HEADER */
+.page-header {
+  padding: 32px 40px 24px;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  font-weight: 400;
+}
+.page-subtitle {
+  font-size: 13px;
+  color: var(--warm-gray);
+  margin-top: 4px;
+}
+
+.header-actions { display: flex; gap: 10px; }
+.btn {
+  padding: 8px 18px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.02em;
+}
+.btn-primary { background: var(--ink); color: white; }
+.btn-primary:hover { background: #333; }
+.btn-outline { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.btn-outline:hover { border-color: var(--ink); }
+
+/* CONTENT AREA */
+.content { padding: 32px 40px; }
+
+/* PANELS / PAGES */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* STATS ROW */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 20px;
+}
+.stat-value {
+  font-family: 'DM Serif Display', serif;
+  font-size: 36px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--warm-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'DM Mono', monospace;
+}
+.stat-card.red { border-top: 3px solid var(--accent); }
+.stat-card.green { border-top: 3px solid var(--green); }
+.stat-card.blue { border-top: 3px solid var(--blue); }
+.stat-card.gold { border-top: 3px solid var(--gold); }
+
+/* GRID 2-COL */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+/* CARD */
+.card {
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 24px;
+}
+.card-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+/* RESOURCE LINKS */
+.resource-group { margin-bottom: 24px; }
+.resource-school {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  font-weight: 400;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.school-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border: 1px solid currentColor;
+}
+.school-badge.harvard { color: #a51c30; border-color: #a51c30; }
+.school-badge.mit { color: #8a0000; }
+.school-badge.cornell { color: #b31b1b; }
+
+.resource-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.resource-link {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  text-decoration: none;
+  color: var(--ink);
+  transition: all 0.15s;
+  background: white;
+}
+.resource-link:hover {
+  border-color: var(--ink);
+  background: var(--accent-light);
+  transform: translateY(-1px);
+}
+.resource-link .r-icon { font-size: 14px; margin-top: 1px; flex-shrink: 0; }
+.resource-link .r-text {}
+.resource-link .r-name { font-size: 12px; font-weight: 500; }
+.resource-link .r-desc { font-size: 10px; color: var(--warm-gray); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+.category-tag {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  margin-bottom: 10px;
+}
+.tag-fellowship { background: var(--gold-light); color: var(--gold); }
+.tag-job { background: var(--blue-light); color: var(--blue); }
+.tag-alumni { background: var(--green-light); color: var(--green); }
+.tag-campus { background: var(--accent-light); color: var(--accent); }
+
+/* DISCIPLINE TABS */
+.disc-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 24px;
+}
+.disc-tab {
+  padding: 10px 22px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  color: var(--warm-gray);
+}
+.disc-tab:hover { color: var(--ink); }
+.disc-tab.active { color: var(--ink); border-bottom-color: var(--accent); }
+
+.disc-panel { display: none; }
+.disc-panel.active { display: block; }
+
+/* DOCS SECTION */
+.doc-list { display: flex; flex-direction: column; gap: 8px; }
+.doc-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  background: white;
+  transition: border-color 0.15s;
+}
+.doc-item:hover { border-color: var(--ink); }
+.doc-left { display: flex; align-items: center; gap: 12px; }
+.doc-icon { font-size: 18px; }
+.doc-name { font-size: 13px; font-weight: 500; }
+.doc-date { font-size: 11px; color: var(--warm-gray); font-family: 'DM Mono', monospace; }
+.doc-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+}
+.status-draft { background: var(--gold-light); color: var(--gold); }
+.status-ready { background: var(--green-light); color: var(--green); }
+.status-sent { background: var(--blue-light); color: var(--blue); }
+.doc-actions { display: flex; gap: 6px; margin-left: 10px; }
+.icon-btn {
+  background: none;
+  border: 1px solid var(--rule);
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.15s;
+}
+.icon-btn:hover { border-color: var(--ink); background: var(--paper); }
+
+/* EMAIL LIST */
+.email-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.email-table th {
+  text-align: left;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  padding: 0 12px 10px;
+  border-bottom: 1px solid var(--rule);
+}
+.email-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.email-table tr:hover td { background: var(--paper); }
+.email-table tr:last-child td { border-bottom: none; }
+
+.contact-avatar {
+  width: 28px; height: 28px;
+  background: var(--ink);
+  color: white;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ADD FORM */
+.add-form {
+  display: none;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.add-form.open { display: block; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); }
+.form-input {
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  background: white;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--ink); }
+
+/* CALENDAR */
+.calendar-wrapper { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+.calendar-grid { background: white; border: 1px solid var(--rule); padding: 24px; }
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.cal-month {
+  font-family: 'DM Serif Display', serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+.cal-nav { display: flex; gap: 8px; }
+.cal-nav button {
+  background: none;
+  border: 1px solid var(--rule);
+  width: 30px; height: 30px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+}
+.cal-nav button:hover { border-color: var(--ink); background: var(--paper); }
+
+.cal-days-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.cal-day-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  text-align: center;
+  padding: 4px 0;
+}
+.cal-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 6px 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+.cal-day:hover { border-color: var(--rule); background: var(--paper); }
+.cal-day.today { background: var(--ink); color: white; }
+.cal-day.today:hover { background: #333; }
+.cal-day.other-month { color: var(--rule); }
+.cal-day.has-event::after {
+  content: '';
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  position: absolute;
+  bottom: 4px;
+}
+.cal-day.today.has-event::after { background: white; }
+.cal-day.deadline::after { background: var(--gold); }
+.cal-day.selected { border-color: var(--accent); }
+
+/* EVENTS PANEL */
+.events-panel { background: white; border: 1px solid var(--rule); padding: 24px; }
+.event-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.event-item:last-child { border-bottom: none; }
+.event-date-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  margin-bottom: 4px;
+}
+.event-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.event-type {
+  display: inline-block;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 6px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.event-deadline { background: var(--gold-light); color: var(--gold); }
+.event-interview { background: var(--green-light); color: var(--green); }
+.event-followup { background: var(--blue-light); color: var(--blue); }
+.event-submit { background: var(--accent-light); color: var(--accent); }
+
+/* PAST DATA */
+.job-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 100px;
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+}
+.job-row.header {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+}
+.job-cell {
+  padding: 12px 16px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+}
+.job-row:not(.header):hover .job-cell { background: var(--paper); }
+.stage-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  padding: 2px 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.stage-applied { background: var(--blue-light); color: var(--blue); }
+.stage-interview { background: var(--green-light); color: var(--green); }
+.stage-rejected { background: #f0eae8; color: #9a7070; }
+.stage-offer { background: var(--gold-light); color: var(--gold); }
+
+/* SECTION DIVIDER */
+.section-sep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0 20px;
+}
+.section-sep span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--warm-gray);
+  white-space: nowrap;
+}
+.section-sep::before, .section-sep::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.section-sep::before { flex: 0 0 20px; }
+
+/* NOTES */
+textarea.notes-area {
+  width: 100%;
+  border: 1px solid var(--rule);
+  padding: 14px;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  background: white;
+  resize: vertical;
+  min-height: 120px;
+  outline: none;
+  transition: border-color 0.15s;
+  line-height: 1.6;
+}
+textarea.notes-area:focus { border-color: var(--ink); }
+
+/* PROGRESS BARS */
+.progress-item { margin-bottom: 14px; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.progress-label span:last-child { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--warm-gray); }
+.progress-bar { height: 3px; background: var(--rule); }
+.progress-fill { height: 100%; transition: width 0.6s ease; }
+.fill-arch { background: var(--accent); }
+.fill-land { background: var(--green); }
+.fill-ai { background: var(--blue); }
+.fill-acad { background: var(--gold); }
+
+/* NOTIFICATION DOT */
+.nav-badge {
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  padding: 1px 5px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rule); }
+
+/* MODAL BACKDROP */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: white;
+  padding: 32px;
+  width: 480px;
+  max-width: 90vw;
+  border: 1px solid var(--rule);
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal h2 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; margin-bottom: 20px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 40px 20px; color: var(--warm-gray); }
+.empty-icon { font-size: 40px; margin-bottom: 12px; }
+.empty p { font-size: 13px; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <h1>Job Search<br>Command Center</h1>
+    <span>Personal Dashboard</span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active" onclick="showPanel('overview')">
+      <span class="nav-icon">◈</span> Overview
+    </div>
+    <div class="nav-item" onclick="showPanel('calendar')">
+      <span class="nav-icon">⊟</span> Calendar
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="showPanel('past')">
+      <span class="nav-icon">⊞</span> Past Data
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">By Discipline</div>
+    <div class="nav-item" onclick="showPanel('discipline')">
+      <span class="nav-icon">⬡</span> Architecture
+    </div>
+    <div class="nav-item" onclick="showPanel('discipline'); switchDisc('la')">
+      <span class="nav-icon">⬡</span> Landscape Arch.
+    </div>
+    <div class="nav-item" onclick="showPanel('discipline'); switchDisc('ai')">
+      <span class="nav-icon">⬡</span> AI / Tech
+    </div>
+    <div class="nav-item" onclick="showPanel('discipline'); switchDisc('acad')">
+      <span class="nav-icon">⬡</span> Academia
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Resources</div>
+    <div class="nav-item" onclick="showPanel('resources')">
+      <span class="nav-icon">◎</span> Harvard
+    </div>
+    <div class="nav-item" onclick="showPanel('resources'); scrollTo('mit-section')">
+      <span class="nav-icon">◎</span> MIT
+    </div>
+    <div class="nav-item" onclick="showPanel('resources'); scrollTo('cornell-section')">
+      <span class="nav-icon">◎</span> Cornell
+    </div>
+  </div>
+
+  <div class="sidebar-bottom">
+    <div class="date-display" id="live-date">Loading...</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- ===== OVERVIEW PANEL ===== -->
+  <div id="panel-overview" class="panel active">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Good morning ☀</div>
+        <div class="page-subtitle">Here's your job search at a glance.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="openAddJob()">+ Add Application</button>
+        <button class="btn btn-primary" onclick="showPanel('calendar')">View Calendar</button>
+      </div>
+    </div>
+    <div class="content">
+      <!-- STATS -->
+      <div class="stats-row">
+        <div class="stat-card red">
+          <div class="stat-value" id="stat-applied">0</div>
+          <div class="stat-label">Applied</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-value" id="stat-interview">0</div>
+          <div class="stat-label">Interviews</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-value" id="stat-deadlines">3</div>
+          <div class="stat-label">Upcoming Deadlines</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-value" id="stat-fellowships">5</div>
+          <div class="stat-label">Fellowships Tracked</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <!-- RECENT APPS -->
+        <div class="card">
+          <div class="card-title">Recent Applications</div>
+          <div id="recent-apps">
+            <div class="empty">
+              <div class="empty-icon">📋</div>
+              <p>No applications yet.<br>Add your first one above.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DISCIPLINE PROGRESS -->
+        <div class="card">
+          <div class="card-title">Applications by Discipline</div>
+          <div class="progress-item">
+            <div class="progress-label"><span>Architecture</span><span id="prog-arch">0 apps</span></div>
+            <div class="progress-bar"><div class="progress-fill fill-arch" id="bar-arch" style="width:0%"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label"><span>Landscape Architecture</span><span id="prog-la">0 apps</span></div>
+            <div class="progress-bar"><div class="progress-fill fill-land" id="bar-la" style="width:0%"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label"><span>AI / Tech</span><span id="prog-ai">0 apps</span></div>
+            <div class="progress-bar"><div class="progress-fill fill-ai" id="bar-ai" style="width:0%"></div></div>
+          </div>
+          <div class="progress-item">
+            <div class="progress-label"><span>Academia</span><span id="prog-acad">0 apps</span></div>
+            <div class="progress-bar"><div class="progress-fill fill-acad" id="bar-acad" style="width:0%"></div></div>
+          </div>
+          <div style="margin-top:16px;">
+            <textarea class="notes-area" placeholder="Quick notes, thoughts, strategy..." style="min-height:80px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPCOMING DEADLINES MINI -->
+      <div class="card">
+        <div class="card-title">Upcoming Deadlines & Events</div>
+        <div id="deadline-list">
+          <div class="job-row header">
+            <div class="job-cell">Event / Position</div>
+            <div class="job-cell">Organization</div>
+            <div class="job-cell">Deadline</div>
+            <div class="job-cell">Type</div>
+            <div class="job-cell"></div>
+          </div>
+          <div class="job-row">
+            <div class="job-cell">GSD Create — Architecture Positions</div>
+            <div class="job-cell">Harvard GSD</div>
+            <div class="job-cell" style="font-family:'DM Mono',monospace;font-size:11px;">Rolling</div>
+            <div class="job-cell"><span class="stage-badge stage-applied">Job</span></div>
+            <div class="job-cell"><a href="https://gsd-harvard-csm.symplicity.com/students/app/home" target="_blank" class="btn btn-outline" style="font-size:10px;padding:4px 10px;">Open ↗</a></div>
+          </div>
+          <div class="job-row">
+            <div class="job-cell">FAS CARAT — Fellowship Applications</div>
+            <div class="job-cell">Harvard FAS</div>
+            <div class="job-cell" style="font-family:'DM Mono',monospace;font-size:11px;">Check portal</div>
+            <div class="job-cell"><span class="stage-badge stage-interview">Fellowship</span></div>
+            <div class="job-cell"><a href="https://carat.fas.harvard.edu/applicant/index" target="_blank" class="btn btn-outline" style="font-size:10px;padding:4px 10px;">Open ↗</a></div>
+          </div>
+          <div class="job-row">
+            <div class="job-cell">SPIN — Grant Search</div>
+            <div class="job-cell">Harvard Library</div>
+            <div class="job-cell" style="font-family:'DM Mono',monospace;font-size:11px;">Ongoing</div>
+            <div class="job-cell"><span class="stage-badge" style="background:var(--gold-light);color:var(--gold);">Grant</span></div>
+            <div class="job-cell"><a href="https://spin-infoedglobal-com.us1.proxy.openathens.net/Home/SOLRSearch" target="_blank" class="btn btn-outline" style="font-size:10px;padding:4px 10px;">Open ↗</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RESOURCES PANEL ===== -->
+  <div id="panel-resources" class="panel">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Resources</div>
+        <div class="page-subtitle">Harvard · MIT · Cornell — Jobs, Fellowships, Campus Networks</div>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- HARVARD -->
+      <div class="resource-group" id="harvard-section">
+        <div class="resource-school">
+          Harvard University <span class="school-badge harvard">Harvard</span>
+        </div>
+
+        <div class="section-sep"><span>Job Portals</span></div>
+        <div class="resource-grid">
+          <a class="resource-link" href="https://academicpositions.harvard.edu/" target="_blank">
+            <span class="r-icon">🎓</span>
+            <div class="r-text">
+              <div class="r-name">Harvard Academic Positions</div>
+              <div class="r-desc">Faculty & research jobs</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://gsd-harvard-csm.symplicity.com/students/app/home" target="_blank">
+            <span class="r-icon">🏛</span>
+            <div class="r-text">
+              <div class="r-name">GSD Create</div>
+              <div class="r-desc">GSD career management</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://seas.harvard.edu/faculty?research[411]=411&sort_by=field_last_name" target="_blank">
+            <span class="r-icon">🔬</span>
+            <div class="r-text">
+              <div class="r-name">SEAS Faculty Directory</div>
+              <div class="r-desc">Research assistant leads</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="section-sep"><span>Fellowships & Grants</span></div>
+        <div class="resource-grid">
+          <a class="resource-link" href="https://carat.fas.harvard.edu/applicant/index" target="_blank">
+            <span class="r-icon">📜</span>
+            <div class="r-text">
+              <div class="r-name">FAS CARAT</div>
+              <div class="r-desc">Faculty of Arts & Sciences grants</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://guides.library.harvard.edu/gsd/write/grant-funding" target="_blank">
+            <span class="r-icon">📚</span>
+            <div class="r-text">
+              <div class="r-name">GSD Grants Guide</div>
+              <div class="r-desc">Library grant-funding resources</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://www.gsd.harvard.edu/resources/scholarships-for-international-students/" target="_blank">
+            <span class="r-icon">🌐</span>
+            <div class="r-text">
+              <div class="r-name">Intl. Scholarships</div>
+              <div class="r-desc">GSD outside scholarships</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://spin-infoedglobal-com.us1.proxy.openathens.net/Home/SOLRSearch" target="_blank">
+            <span class="r-icon">🔍</span>
+            <div class="r-text">
+              <div class="r-name">SPIN Database</div>
+              <div class="r-desc">Grant search (via Harvard proxy)</div>
+            </div>
+          </a>
+        </div>
+
+        <div class="section-sep"><span>Alumni Network</span></div>
+        <div class="resource-grid">
+          <a class="resource-link" href="https://alumni.harvard.edu/community" target="_blank">
+            <span class="r-icon">🤝</span>
+            <div class="r-text">
+              <div class="r-name">Harvard Alumni Association</div>
+              <div class="r-desc">HAA community hub</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://community.alumni.harvard.edu/forum/messageboard?category=2" target="_blank">
+            <span class="r-icon">📢</span>
+            <div class="r-text">
+              <div class="r-name">HAA Job Board (Daily)</div>
+              <div class="r-desc">Daily alumni job posts</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://community.alumni.harvard.edu/forum/newmessage" target="_blank">
+            <span class="r-icon">✏️</span>
+            <div class="r-text">
+              <div class="r-name">Post a Job (HAA)</div>
+              <div class="r-desc">Share opportunities</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://alumni.harvard.edu/community/clubs-sigs/sigs-directory" target="_blank">
+            <span class="r-icon">📁</span>
+            <div class="r-text">
+              <div class="r-name">SIGs Directory</div>
+              <div class="r-desc">Shared interest groups</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://www.haaus.org/" target="_blank">
+            <span class="r-icon">🏗</span>
+            <div class="r-text">
+              <div class="r-name">HAAUS</div>
+              <div class="r-desc">Harvard Alumni Arch. & Urban Society</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://www.harvardintech.com/" target="_blank">
+            <span class="r-icon">💻</span>
+            <div class="r-text">
+              <div class="r-name">Harvard Alumni in Tech</div>
+              <div class="r-desc">Technology alumni network</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- MIT -->
+      <div class="resource-group" id="mit-section">
+        <div class="resource-school" style="margin-top:32px;">
+          MIT <span class="school-badge mit">MIT</span>
+        </div>
+        <div class="resource-grid">
+          <a class="resource-link" href="https://careers.mit.edu/" target="_blank">
+            <span class="r-icon">⚙️</span>
+            <div class="r-text">
+              <div class="r-name">MIT Career Office</div>
+              <div class="r-desc">Career development & jobs</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://alum.mit.edu/" target="_blank">
+            <span class="r-icon">🎓</span>
+            <div class="r-text">
+              <div class="r-name">MIT Alumni Association</div>
+              <div class="r-desc">Alum network & resources</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://architecture.mit.edu/" target="_blank">
+            <span class="r-icon">🏛</span>
+            <div class="r-text">
+              <div class="r-name">MIT School of Architecture</div>
+              <div class="r-desc">SA+P opportunities</div>
+            </div>
+          </a>
+          <div class="resource-link" style="border-style:dashed;cursor:default;opacity:0.5;">
+            <span class="r-icon">＋</span>
+            <div class="r-text">
+              <div class="r-name">Add MIT Resource</div>
+              <div class="r-desc">Click to add link</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CORNELL -->
+      <div class="resource-group" id="cornell-section">
+        <div class="resource-school" style="margin-top:32px;">
+          Cornell University <span class="school-badge cornell">Cornell</span>
+        </div>
+        <div class="resource-grid">
+          <a class="resource-link" href="https://aap.cornell.edu/" target="_blank">
+            <span class="r-icon">🏛</span>
+            <div class="r-text">
+              <div class="r-name">Cornell AAP</div>
+              <div class="r-desc">Architecture, Art & Planning</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://alumni.cornell.edu/" target="_blank">
+            <span class="r-icon">🤝</span>
+            <div class="r-text">
+              <div class="r-name">Cornell Alumni Network</div>
+              <div class="r-desc">Alumni association</div>
+            </div>
+          </a>
+          <a class="resource-link" href="https://gradschool.cornell.edu/financial-support/fellowships/" target="_blank">
+            <span class="r-icon">📜</span>
+            <div class="r-text">
+              <div class="r-name">Cornell Fellowships</div>
+              <div class="r-desc">Grad school funding</div>
+            </div>
+          </a>
+          <div class="resource-link" style="border-style:dashed;cursor:default;opacity:0.5;">
+            <span class="r-icon">＋</span>
+            <div class="r-text">
+              <div class="r-name">Add Cornell Resource</div>
+              <div class="r-desc">Click to add link</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== DISCIPLINE PANEL ===== -->
+  <div id="panel-discipline" class="panel">
+    <div class="page-header">
+      <div>
+        <div class="page-title">By Discipline</div>
+        <div class="page-subtitle">CVs, portfolios, cover letters, email contacts by field.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="add-doc-btn" onclick="toggleAddForm()">+ Add Document</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="disc-tabs">
+        <div class="disc-tab active" id="tab-arch" onclick="switchDisc('arch')">Architecture</div>
+        <div class="disc-tab" id="tab-la" onclick="switchDisc('la')">Landscape Architecture</div>
+        <div class="disc-tab" id="tab-ai" onclick="switchDisc('ai')">AI / Tech</div>
+        <div class="disc-tab" id="tab-acad" onclick="switchDisc('acad')">Academia</div>
+      </div>
+
+      <!-- ADD FORM -->
+      <div class="add-form" id="add-doc-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Document Name</label>
+            <input class="form-input" id="doc-name-input" placeholder="e.g. CV_Architecture_2025" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-input" id="doc-type-input">
+              <option>CV</option>
+              <option>Portfolio</option>
+              <option>Cover Letter</option>
+              <option>Website</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Status</label>
+            <select class="form-input" id="doc-status-input">
+              <option value="draft">Draft</option>
+              <option value="ready">Ready</option>
+              <option value="sent">Sent</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button class="btn btn-primary" onclick="addDoc()">Save Document</button>
+          <button class="btn btn-outline" onclick="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- ARCH PANEL -->
+      <div class="disc-panel active" id="disc-arch">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Documents</div>
+            <div class="doc-list" id="docs-arch">
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">📄</span>
+                  <div><div class="doc-name">Architecture CV</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="doc-status status-draft">Draft</span>
+                  <div class="doc-actions">
+                    <button class="icon-btn">✏️</button>
+                    <button class="icon-btn">📋</button>
+                  </div>
+                </div>
+              </div>
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">🖼</span>
+                  <div><div class="doc-name">Architecture Portfolio</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="doc-status status-draft">Draft</span>
+                  <div class="doc-actions">
+                    <button class="icon-btn">✏️</button>
+                    <button class="icon-btn">📋</button>
+                  </div>
+                </div>
+              </div>
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">✉️</span>
+                  <div><div class="doc-name">Cover Letter Template</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  <span class="doc-status status-draft">Draft</span>
+                  <div class="doc-actions">
+                    <button class="icon-btn">✏️</button>
+                    <button class="icon-btn">📋</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Email / Contact List</div>
+            <div id="email-list-arch">
+              <button class="btn btn-outline" onclick="openAddContact('arch')" style="margin-bottom:14px;font-size:12px;">+ Add Contact</button>
+              <table class="email-table">
+                <thead><tr><th></th><th>Name</th><th>Firm / Org</th><th>Email</th><th>Notes</th></tr></thead>
+                <tbody id="contacts-arch">
+                  <tr><td colspan="5" class="empty"><p style="padding:16px;">No contacts yet.</p></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Notes</div>
+          <textarea class="notes-area" placeholder="Strategy notes, target firms, talking points..."></textarea>
+        </div>
+      </div>
+
+      <!-- LA PANEL -->
+      <div class="disc-panel" id="disc-la">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Documents</div>
+            <div class="doc-list" id="docs-la">
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">📄</span>
+                  <div><div class="doc-name">Landscape Arch. CV</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <span class="doc-status status-draft">Draft</span>
+              </div>
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">🖼</span>
+                  <div><div class="doc-name">LA Portfolio</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <span class="doc-status status-draft">Draft</span>
+              </div>
+              <div class="doc-item">
+                <div class="doc-left">
+                  <span class="doc-icon">✉️</span>
+                  <div><div class="doc-name">Cover Letter — LA</div><div class="doc-date">Last edited: —</div></div>
+                </div>
+                <span class="doc-status status-draft">Draft</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Email / Contact List</div>
+            <button class="btn btn-outline" onclick="openAddContact('la')" style="margin-bottom:14px;font-size:12px;">+ Add Contact</button>
+            <table class="email-table">
+              <thead><tr><th></th><th>Name</th><th>Firm / Org</th><th>Email</th><th>Notes</th></tr></thead>
+              <tbody id="contacts-la"><tr><td colspan="5"><p class="empty" style="padding:12px;">No contacts yet.</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Notes</div><textarea class="notes-area" placeholder="Target firms, ecological focus areas, conferences..."></textarea></div>
+      </div>
+
+      <!-- AI PANEL -->
+      <div class="disc-panel" id="disc-ai">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Documents</div>
+            <div class="doc-list">
+              <div class="doc-item">
+                <div class="doc-left"><span class="doc-icon">🌐</span>
+                  <div><div class="doc-name">Personal Website</div><div class="doc-date">Last edited: —</div></div>
+                </div><span class="doc-status status-draft">Draft</span>
+              </div>
+              <div class="doc-item">
+                <div class="doc-left"><span class="doc-icon">📄</span>
+                  <div><div class="doc-name">AI / Tech CV</div><div class="doc-date">Last edited: —</div></div>
+                </div><span class="doc-status status-draft">Draft</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Contact List</div>
+            <button class="btn btn-outline" onclick="openAddContact('ai')" style="margin-bottom:14px;font-size:12px;">+ Add Contact</button>
+            <table class="email-table">
+              <thead><tr><th></th><th>Name</th><th>Company</th><th>Email</th><th>Notes</th></tr></thead>
+              <tbody id="contacts-ai"><tr><td colspan="5"><p class="empty" style="padding:12px;">No contacts yet.</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Notes</div><textarea class="notes-area" placeholder="GitHub, LinkedIn, project links, research interests..."></textarea></div>
+      </div>
+
+      <!-- ACADEMIA PANEL -->
+      <div class="disc-panel" id="disc-acad">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">Documents</div>
+            <div class="doc-list">
+              <div class="doc-item">
+                <div class="doc-left"><span class="doc-icon">📄</span>
+                  <div><div class="doc-name">Academic CV</div><div class="doc-date">Last edited: —</div></div>
+                </div><span class="doc-status status-draft">Draft</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Contact List</div>
+            <button class="btn btn-outline" onclick="openAddContact('acad')" style="margin-bottom:14px;font-size:12px;">+ Add Contact</button>
+            <table class="email-table">
+              <thead><tr><th></th><th>Name</th><th>Institution</th><th>Email</th><th>Notes</th></tr></thead>
+              <tbody id="contacts-acad"><tr><td colspan="5"><p class="empty" style="padding:12px;">No contacts yet.</p></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">Notes</div><textarea class="notes-area" placeholder="Research statement topics, target positions, conferences, publications..."></textarea></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CALENDAR PANEL ===== -->
+  <div id="panel-calendar" class="panel">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Calendar Planner</div>
+        <div class="page-subtitle">Deadlines, interviews, follow-ups — all in one place.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openAddEvent()">+ Add Event</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="calendar-wrapper">
+        <div class="calendar-grid">
+          <div class="cal-header">
+            <div class="cal-month" id="cal-month-label">February 2026</div>
+            <div class="cal-nav">
+              <button onclick="changeMonth(-1)">‹</button>
+              <button onclick="changeMonth(1)">›</button>
+            </div>
+          </div>
+          <div class="cal-days-header">
+            <div class="cal-day-name">Sun</div>
+            <div class="cal-day-name">Mon</div>
+            <div class="cal-day-name">Tue</div>
+            <div class="cal-day-name">Wed</div>
+            <div class="cal-day-name">Thu</div>
+            <div class="cal-day-name">Fri</div>
+            <div class="cal-day-name">Sat</div>
+          </div>
+          <div class="cal-days" id="cal-days"></div>
+        </div>
+
+        <div class="events-panel">
+          <div class="card-title" style="margin-bottom:16px;">Events</div>
+          <div id="events-list">
+            <div class="event-item">
+              <div class="event-date-label">Mar 1, 2026</div>
+              <div class="event-title">GSD Fellowship Applications Open</div>
+              <span class="event-type event-deadline">Deadline</span>
+            </div>
+            <div class="event-item">
+              <div class="event-date-label">Mar 15, 2026</div>
+              <div class="event-title">HAAUS Networking Event</div>
+              <span class="event-type event-interview">Networking</span>
+            </div>
+            <div class="event-item">
+              <div class="event-date-label">Ongoing</div>
+              <div class="event-title">HAA Daily Job Posts — Check Forum</div>
+              <span class="event-type event-followup">Follow-up</span>
+            </div>
+          </div>
+
+          <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--rule);">
+            <div class="card-title" style="margin-bottom:12px;">Legend</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:11px;">
+              <span><span class="event-type event-deadline">Deadline</span> Application due</span>
+              <span><span class="event-type event-interview">Interview</span> Scheduled call</span>
+              <span><span class="event-type event-followup">Follow-up</span> Check in</span>
+              <span><span class="event-type event-submit">Submit</span> Submit docs</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAST DATA PANEL ===== -->
+  <div id="panel-past" class="panel">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Past Applications</div>
+        <div class="page-subtitle">Track every application, stage, and outcome.</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-outline" onclick="openAddJob()">+ Add Application</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="card" style="padding:0;">
+        <div class="job-row header" style="background:var(--paper);">
+          <div class="job-cell">Position / Organization</div>
+          <div class="job-cell">Discipline</div>
+          <div class="job-cell">Date Applied</div>
+          <div class="job-cell">Stage</div>
+          <div class="job-cell">Actions</div>
+        </div>
+        <div id="jobs-table-body">
+          <div style="text-align:center;padding:48px 0;color:var(--warm-gray);">
+            <div style="font-size:32px;margin-bottom:12px;">◈</div>
+            <div style="font-size:13px;">No applications logged yet.<br>Click "Add Application" to start tracking.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ADD JOB MODAL -->
+<div class="modal-backdrop" id="add-job-modal">
+  <div class="modal">
+    <h2>Add Application</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group">
+        <label class="form-label">Position / Role</label>
+        <input class="form-input" id="job-title" placeholder="e.g. Junior Architect" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organization</label>
+        <input class="form-input" id="job-org" placeholder="e.g. Snøhetta, Harvard GSD..." />
+      </div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr;">
+        <div class="form-group">
+          <label class="form-label">Discipline</label>
+          <select class="form-input" id="job-discipline">
+            <option value="arch">Architecture</option>
+            <option value="la">Landscape Architecture</option>
+            <option value="ai">AI / Tech</option>
+            <option value="acad">Academia</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Stage</label>
+          <select class="form-input" id="job-stage">
+            <option value="applied">Applied</option>
+            <option value="interview">Interview</option>
+            <option value="offer">Offer</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Applied</label>
+        <input class="form-input" type="date" id="job-date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea class="notes-area" id="job-notes" style="min-height:70px;" placeholder="Referrals, requirements, follow-up dates..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveJob()">Save Application</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CONTACT MODAL -->
+<div class="modal-backdrop" id="add-contact-modal">
+  <div class="modal">
+    <h2>Add Contact</h2>
+    <input type="hidden" id="contact-disc" />
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="contact-name" placeholder="Full name" /></div>
+      <div class="form-group"><label class="form-label">Organization / Firm</label><input class="form-input" id="contact-org" placeholder="Where do they work?" /></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="contact-email" type="email" placeholder="email@example.com" /></div>
+      <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="contact-notes" placeholder="How you met, follow-up needed, etc." /></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD EVENT MODAL -->
+<div class="modal-backdrop" id="add-event-modal">
+  <div class="modal">
+    <h2>Add Event</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="form-group"><label class="form-label">Event Title</label><input class="form-input" id="event-title" placeholder="e.g. Application deadline — GSD Fellowship" /></div>
+      <div class="form-row" style="grid-template-columns:1fr 1fr;">
+        <div class="form-group"><label class="form-label">Date</label><input class="form-input" type="date" id="event-date" /></div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-input" id="event-type-sel">
+            <option value="deadline">Deadline</option>
+            <option value="interview">Interview</option>
+            <option value="followup">Follow-up</option>
+            <option value="submit">Submit</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- STATE ----
+const state = {
+  jobs: [],
+  events: [],
+  contacts: { arch: [], la: [], ai: [], acad: [] },
+  calYear: 2026,
+  calMonth: 1 // 0-indexed (1 = Feb)
+};
+
+// ---- NAVIGATION ----
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  updateDate();
+}
+
+function switchDisc(disc) {
+  document.querySelectorAll('.disc-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.disc-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('disc-' + disc).classList.add('active');
+  document.getElementById('tab-' + disc).classList.add('active');
+  showPanel('discipline');
+}
+
+// ---- DATE ----
+function updateDate() {
+  const now = new Date();
+  const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('live-date').textContent = now.toLocaleDateString('en-US', opts);
+}
+updateDate();
+
+// ---- CALENDAR ----
+function renderCalendar() {
+  const { calYear, calMonth } = state;
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[calMonth]} ${calYear}`;
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+
+  const container = document.getElementById('cal-days');
+  container.innerHTML = '';
+
+  const eventDays = state.events.map(e => {
+    const d = new Date(e.date);
+    if (d.getFullYear() === calYear && d.getMonth() === calMonth) return d.getDate();
+    return null;
+  }).filter(Boolean);
+
+  // prev month
+  for (let i = firstDay - 1; i >= 0; i--) {
+    const d = document.createElement('div');
+    d.className = 'cal-day other-month';
+    d.textContent = daysInPrev - i;
+    container.appendChild(d);
+  }
+  // current month
+  for (let i = 1; i <= daysInMonth; i++) {
+    const d = document.createElement('div');
+    d.className = 'cal-day';
+    const isToday = today.getFullYear() === calYear && today.getMonth() === calMonth && today.getDate() === i;
+    if (isToday) d.classList.add('today');
+    if (eventDays.includes(i)) d.classList.add('has-event');
+    d.textContent = i;
+    d.onclick = () => highlightDay(i);
+    container.appendChild(d);
+  }
+  // next month
+  const total = firstDay + daysInMonth;
+  const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+  for (let i = 1; i <= remaining; i++) {
+    const d = document.createElement('div');
+    d.className = 'cal-day other-month';
+    d.textContent = i;
+    container.appendChild(d);
+  }
+}
+renderCalendar();
+
+function changeMonth(dir) {
+  state.calMonth += dir;
+  if (state.calMonth < 0) { state.calMonth = 11; state.calYear--; }
+  if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
+  renderCalendar();
+}
+
+function highlightDay(day) {
+  document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+  const days = document.querySelectorAll('.cal-day:not(.other-month)');
+  if (days[day - 1]) days[day - 1].classList.add('selected');
+}
+
+// ---- MODALS ----
+function openAddJob() { document.getElementById('add-job-modal').classList.add('open'); }
+function openAddContact(disc) { document.getElementById('contact-disc').value = disc; document.getElementById('add-contact-modal').classList.add('open'); }
+function openAddEvent() { document.getElementById('add-event-modal').classList.add('open'); }
+function closeModals() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('open')); }
+document.querySelectorAll('.modal-backdrop').forEach(m => m.onclick = e => { if (e.target === m) closeModals(); });
+
+// ---- SAVE JOB ----
+function saveJob() {
+  const title = document.getElementById('job-title').value.trim();
+  const org = document.getElementById('job-org').value.trim();
+  const disc = document.getElementById('job-discipline').value;
+  const stage = document.getElementById('job-stage').value;
+  const date = document.getElementById('job-date').value;
+  const notes = document.getElementById('job-notes').value;
+  if (!title || !org) return;
+
+  const job = { title, org, disc, stage, date, notes };
+  state.jobs.push(job);
+  renderJobs();
+  updateStats();
+  closeModals();
+  ['job-title','job-org','job-date','job-notes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function renderJobs() {
+  const tbody = document.getElementById('jobs-table-body');
+  const recentEl = document.getElementById('recent-apps');
+  if (state.jobs.length === 0) {
+    tbody.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--warm-gray);"><div style="font-size:32px;margin-bottom:12px;">◈</div><div style="font-size:13px;">No applications yet.</div></div>`;
+    recentEl.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><p>No applications yet.</p></div>`;
+    return;
+  }
+  const stageMap = { applied: 'stage-applied', interview: 'stage-interview', offer: 'stage-offer', rejected: 'stage-rejected' };
+  const discMap = { arch: 'Architecture', la: 'Landscape Arch.', ai: 'AI / Tech', acad: 'Academia' };
+
+  tbody.innerHTML = state.jobs.slice().reverse().map((j,i) => `
+    <div class="job-row">
+      <div class="job-cell"><strong style="font-size:13px;">${j.title}</strong><span style="color:var(--warm-gray);font-size:11px;display:block;">${j.org}</span></div>
+      <div class="job-cell" style="font-size:12px;">${discMap[j.disc]}</div>
+      <div class="job-cell" style="font-family:'DM Mono',monospace;font-size:11px;">${j.date || '—'}</div>
+      <div class="job-cell"><span class="stage-badge ${stageMap[j.stage]}">${j.stage}</span></div>
+      <div class="job-cell"><button class="icon-btn" onclick="deleteJob(${state.jobs.length-1-i})">✕</button></div>
+    </div>
+  `).join('');
+
+  recentEl.innerHTML = state.jobs.slice(-3).reverse().map(j => `
+    <div style="padding:10px 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        <div style="font-size:13px;font-weight:500;">${j.title}</div>
+        <div style="font-size:11px;color:var(--warm-gray);">${j.org}</div>
+      </div>
+      <span class="stage-badge ${stageMap[j.stage]}">${j.stage}</span>
+    </div>
+  `).join('');
+}
+
+function deleteJob(idx) {
+  state.jobs.splice(idx, 1);
+  renderJobs();
+  updateStats();
+}
+
+function updateStats() {
+  const applied = state.jobs.length;
+  const interviews = state.jobs.filter(j => j.stage === 'interview').length;
+  document.getElementById('stat-applied').textContent = applied;
+  document.getElementById('stat-interview').textContent = interviews;
+
+  const counts = { arch: 0, la: 0, ai: 0, acad: 0 };
+  state.jobs.forEach(j => counts[j.disc]++);
+  const max = Math.max(...Object.values(counts), 1);
+
+  ['arch','la','ai','acad'].forEach(d => {
+    document.getElementById('prog-'+d).textContent = counts[d] + ' app' + (counts[d] !== 1 ? 's' : '');
+    document.getElementById('bar-'+d).style.width = (counts[d]/max*100) + '%';
+  });
+}
+
+// ---- SAVE CONTACT ----
+function saveContact() {
+  const disc = document.getElementById('contact-disc').value;
+  const name = document.getElementById('contact-name').value.trim();
+  const org = document.getElementById('contact-org').value.trim();
+  const email = document.getElementById('contact-email').value.trim();
+  const notes = document.getElementById('contact-notes').value.trim();
+  if (!name) return;
+  state.contacts[disc].push({ name, org, email, notes });
+  renderContacts(disc);
+  closeModals();
+  ['contact-name','contact-org','contact-email','contact-notes'].forEach(id => document.getElementById(id).value = '');
+}
+
+function renderContacts(disc) {
+  const tbody = document.getElementById('contacts-' + disc);
+  if (state.contacts[disc].length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5"><p class="empty" style="padding:12px;">No contacts yet.</p></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = state.contacts[disc].map(c => `
+    <tr>
+      <td><div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div></td>
+      <td>${c.name}</td>
+      <td style="color:var(--warm-gray);font-size:11px;">${c.org || '—'}</td>
+      <td><a href="mailto:${c.email}" style="color:var(--blue);font-size:11px;font-family:'DM Mono',monospace;">${c.email || '—'}</a></td>
+      <td style="font-size:11px;color:var(--warm-gray);">${c.notes || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+// ---- SAVE EVENT ----
+function saveEvent() {
+  const title = document.getElementById('event-title').value.trim();
+  const date = document.getElementById('event-date').value;
+  const type = document.getElementById('event-type-sel').value;
+  if (!title) return;
+  state.events.push({ title, date, type });
+  renderEvents();
+  renderCalendar();
+  closeModals();
+  document.getElementById('event-title').value = '';
+}
+
+function renderEvents() {
+  const typeMap = { deadline: 'event-deadline', interview: 'event-interview', followup: 'event-followup', submit: 'event-submit' };
+  const labelMap = { deadline: 'Deadline', interview: 'Interview', followup: 'Follow-up', submit: 'Submit' };
+  const list = document.getElementById('events-list');
+  const custom = state.events.map(e => `
+    <div class="event-item">
+      <div class="event-date-label">${e.date ? new Date(e.date+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : 'TBD'}</div>
+      <div class="event-title">${e.title}</div>
+      <span class="event-type ${typeMap[e.type]}">${labelMap[e.type]}</span>
+    </div>
+  `).join('');
+  const fixed = `
+    <div class="event-item"><div class="event-date-label">Mar 1, 2026</div><div class="event-title">GSD Fellowship Applications Open</div><span class="event-type event-deadline">Deadline</span></div>
+    <div class="event-item"><div class="event-date-label">Mar 15, 2026</div><div class="event-title">HAAUS Networking Event</div><span class="event-type event-interview">Networking</span></div>
+    <div class="event-item"><div class="event-date-label">Ongoing</div><div class="event-title">HAA Daily Job Posts — Check Forum</div><span class="event-type event-followup">Follow-up</span></div>
+  `;
+  list.innerHTML = custom + fixed;
+}
+
+// ---- ADD DOC FORM ----
+function toggleAddForm() {
+  const f = document.getElementById('add-doc-form');
+  f.classList.toggle('open');
+}
+
+function addDoc() {
+  // Just a UI stub — in production would persist
+  const name = document.getElementById('doc-name-input').value.trim();
+  const type = document.getElementById('doc-type-input').value;
+  const status = document.getElementById('doc-status-input').value;
+  if (!name) return;
+  const iconMap = { CV: '📄', Portfolio: '🖼', 'Cover Letter': '✉️', Website: '🌐', Other: '📁' };
+  const activeDisc = document.querySelector('.disc-panel.active');
+  const docList = activeDisc.querySelector('.doc-list');
+  const item = document.createElement('div');
+  item.className = 'doc-item';
+  item.innerHTML = `
+    <div class="doc-left">
+      <span class="doc-icon">${iconMap[type]||'📁'}</span>
+      <div><div class="doc-name">${name}</div><div class="doc-date">Added today</div></div>
+    </div>
+    <span class="doc-status status-${status}">${status.charAt(0).toUpperCase()+status.slice(1)}</span>
+  `;
+  docList.appendChild(item);
+  document.getElementById('doc-name-input').value = '';
+  toggleAddForm();
+}
+</script>
+</body>
+</html>
