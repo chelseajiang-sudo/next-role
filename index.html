@@ -298,6 +298,41 @@ textarea.template-area:focus { border-color: var(--ink); }
 .compose-open-btn { background: var(--blue); color: white; border: none; padding: 10px 22px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
 .compose-open-btn:hover { background: #224470; }
 
+/* CUSTOM RESOURCE ADD FORM */
+.add-res-form {
+  background: white; border: 1px solid var(--rule); padding: 20px 22px;
+}
+.add-res-form-title {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--warm-gray); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+.add-res-form-title::after { content:''; flex:1; height:1px; background:var(--rule); }
+.add-res-fields {
+  display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start;
+}
+.custom-res-item {
+  position: relative;
+}
+.custom-res-item:hover .res-del-btn { opacity: 1; }
+.res-del-btn {
+  position: absolute; top: 6px; right: 6px; opacity: 0;
+  background: white; border: 1px solid var(--rule); width: 20px; height: 20px;
+  border-radius: 50%; cursor: pointer; font-size: 9px; display: flex;
+  align-items: center; justify-content: center; transition: all 0.15s; z-index: 2;
+  color: var(--warm-gray);
+}
+.res-del-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.res-school-chip {
+  font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 1px 6px; margin-top: 3px; display: inline-block;
+  border: 1px solid currentColor; opacity: 0.7;
+}
+.chip-harvard { color: #a51c30; }
+.chip-mit { color: #8a0000; }
+.chip-cornell { color: #b31b1b; }
+.chip-other { color: var(--warm-gray); }
+
 /* TOAST */
 .toast { position: fixed; bottom: 28px; right: 28px; z-index: 300; background: var(--ink); color: white; padding: 11px 18px; font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; border-left: 3px solid var(--green); animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.3s forwards; pointer-events: none; }
 @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
@@ -424,6 +459,69 @@ textarea.template-area:focus { border-color: var(--ink); }
         <a class="resource-link" href="https://gradschool.cornell.edu/financial-support/fellowships/" target="_blank" data-rc="fellowship"><span class="r-icon">📜</span><div><div class="r-name">Cornell Fellowships</div><div class="r-desc">Grad school funding</div><span class="r-cat cat-fellowship">Fellowship</span></div></a>
       </div>
     </div>
+
+    <!-- ── CUSTOM RESOURCES ── -->
+    <div class="resource-section custom-res-section" id="custom-section" style="margin-top:40px;">
+
+      <!-- divider -->
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:24px;">
+        <div style="flex:1;height:1px;background:var(--rule);"></div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--warm-gray);">My Custom Resources</div>
+        <div style="flex:1;height:1px;background:var(--rule);"></div>
+      </div>
+
+      <!-- ADD RESOURCE FORM -->
+      <div class="add-res-form" id="add-res-form">
+        <div class="add-res-form-title">
+          <span>Add New Resource</span>
+        </div>
+        <div class="add-res-fields">
+          <div class="form-group" style="flex:2;min-width:180px;">
+            <label class="form-label">Name / Title</label>
+            <input class="form-input" id="res-name-input" placeholder="e.g. Archinect Jobs" />
+          </div>
+          <div class="form-group" style="flex:3;min-width:200px;">
+            <label class="form-label">URL</label>
+            <input class="form-input" id="res-url-input" placeholder="https://…" />
+          </div>
+          <div class="form-group" style="flex:2;min-width:160px;">
+            <label class="form-label">Description</label>
+            <input class="form-input" id="res-desc-input" placeholder="Short description" />
+          </div>
+          <div class="form-group" style="flex:1;min-width:120px;">
+            <label class="form-label">School / Source</label>
+            <select class="form-input" id="res-school-input">
+              <option value="harvard">Harvard</option>
+              <option value="mit">MIT</option>
+              <option value="cornell">Cornell</option>
+              <option value="other" selected>Other</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;min-width:120px;">
+            <label class="form-label">Category Tag</label>
+            <select class="form-input" id="res-cat-input">
+              <option value="job">Job</option>
+              <option value="fellowship">Fellowship</option>
+              <option value="alumni">Alumni</option>
+              <option value="campus">Campus</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:flex-end;padding-bottom:1px;">
+            <button class="btn btn-primary" onclick="saveCustomResource()" style="white-space:nowrap;height:36px;">Add Resource</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CUSTOM RESOURCE GRID -->
+      <div class="resource-grid" id="custom-res-grid" style="margin-top:16px;"></div>
+      <div id="custom-res-empty" style="display:none;">
+        <div class="empty-state" style="padding:32px 0;">
+          <div class="empty-glyph" style="font-size:32px;">＋</div>
+          <p>No custom resources yet.<br>Fill in the form above to add your first link.</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1256,13 +1354,82 @@ function loadNotes(){
 }
 
 // ─────────────────────────────────────────────
+// CUSTOM RESOURCES
+// ─────────────────────────────────────────────
+function saveCustomResource(){
+  const name=document.getElementById('res-name-input').value.trim();
+  const url=document.getElementById('res-url-input').value.trim();
+  const desc=document.getElementById('res-desc-input').value.trim();
+  const school=document.getElementById('res-school-input').value;
+  const cat=document.getElementById('res-cat-input').value;
+
+  if(!name){ toast('Please enter a resource name.','#c4593a'); return; }
+  if(!url || !url.startsWith('http')){ toast('Please enter a valid URL starting with http(s)://','#c4593a'); return; }
+
+  if(!S.customResources) S.customResources=[];
+  S.customResources.push({ id:uid(), name, url, desc, school, cat });
+  save();
+  renderCustomResources();
+  // Clear inputs
+  ['res-name-input','res-url-input','res-desc-input'].forEach(i=>document.getElementById(i).value='');
+  toast('Resource added.');
+}
+
+function deleteCustomResource(id){
+  S.customResources=(S.customResources||[]).filter(r=>r.id!==id);
+  save(); renderCustomResources(); toast('Resource removed.','#9a7c3a');
+}
+
+const catIconMap={ job:'🔗', fellowship:'📜', alumni:'🤝', campus:'🏛' };
+const catClassMap={ job:'cat-job', fellowship:'cat-fellowship', alumni:'cat-alumni', campus:'cat-campus' };
+const catLabelMap={ job:'Job', fellowship:'Fellowship', alumni:'Alumni', campus:'Campus' };
+const schoolLabelMap={ harvard:'Harvard', mit:'MIT', cornell:'Cornell', other:'Other' };
+const schoolChipClass={ harvard:'chip-harvard', mit:'chip-mit', cornell:'chip-cornell', other:'chip-other' };
+
+function renderCustomResources(){
+  const grid=document.getElementById('custom-res-grid');
+  const empty=document.getElementById('custom-res-empty');
+  if(!grid) return;
+  const list=S.customResources||[];
+
+  // Get active filter
+  const activeFilter=document.querySelector('.res-filter.active');
+  const currentCat=activeFilter?activeFilter.dataset.f:'all';
+
+  const filtered=currentCat==='all' ? list : list.filter(r=>r.cat===currentCat);
+
+  if(!list.length){ grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+
+  if(!filtered.length){ grid.innerHTML=`<div style="font-size:12px;color:var(--warm-gray);font-family:'DM Mono',monospace;padding:16px 0;letter-spacing:0.04em;">No custom resources in this category.</div>`; return; }
+
+  grid.innerHTML=filtered.map(r=>`
+    <div class="custom-res-item">
+      <a class="resource-link" href="${r.url}" target="_blank" data-rc="${r.cat}">
+        <span class="r-icon">${catIconMap[r.cat]||'🔗'}</span>
+        <div>
+          <div class="r-name">${r.name}</div>
+          ${r.desc?`<div class="r-desc">${r.desc}</div>`:''}
+          <div style="display:flex;gap:5px;align-items:center;margin-top:4px;flex-wrap:wrap;">
+            <span class="r-cat ${catClassMap[r.cat]||''}">${catLabelMap[r.cat]||r.cat}</span>
+            <span class="res-school-chip ${schoolChipClass[r.school]||''}">${schoolLabelMap[r.school]||r.school}</span>
+          </div>
+        </div>
+      </a>
+      <button class="res-del-btn" onclick="event.stopPropagation();deleteCustomResource('${r.id}')" title="Remove">✕</button>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────
 // RESOURCE FILTER
 // ─────────────────────────────────────────────
 function filterRes(cat){
   document.querySelectorAll('.res-filter').forEach(b=>b.classList.remove('active'));
   document.querySelector(`.res-filter[data-f="${cat}"]`).classList.add('active');
-  document.querySelectorAll('.resource-link').forEach(l=>{l.style.display=(cat==='all'||l.dataset.rc===cat)?'':'none';});
+  document.querySelectorAll('.resource-link').forEach(l=>{ if(!l.closest('.custom-res-item')) l.style.display=(cat==='all'||l.dataset.rc===cat)?'':'none'; });
   document.querySelectorAll('.section-sep').forEach(s=>{s.style.display=(cat==='all'||s.dataset.s===cat)?'':'none';});
+  renderCustomResources();
 }
 function scrollToSchool(id){setTimeout(()=>{const el=document.getElementById(id+'-section');if(el)el.scrollIntoView({behavior:'smooth',block:'start'});},60);}
 
@@ -1282,6 +1449,7 @@ function init(){
   renderJobs(); renderRecentApps(); updateStats();
   renderCalendar(); renderOverviewDeadlines();
   loadNotes(); loadTemplates();
+  renderCustomResources();
   // Restore discipline
   const disc=S.activeDisc||'arch';
   document.querySelectorAll('.disc-panel').forEach(p=>p.classList.remove('active'));
