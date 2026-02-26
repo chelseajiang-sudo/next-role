@@ -229,6 +229,75 @@ textarea.notes-area:focus { border-color: var(--ink); }
 .empty-glyph { font-family: 'DM Serif Display', serif; font-size: 40px; color: var(--rule); margin-bottom: 10px; }
 .empty-state p { font-size: 12px; color: var(--warm-gray); line-height: 1.9; }
 
+/* FILE UPLOAD ZONE */
+.upload-zone {
+  border: 1.5px dashed var(--rule); background: #faf8f5; padding: 18px 14px;
+  text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 10px;
+  position: relative;
+}
+.upload-zone:hover, .upload-zone.drag-over { border-color: var(--ink); background: var(--accent-light); }
+.upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.upload-zone-icon { font-size: 20px; margin-bottom: 6px; }
+.upload-zone-text { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warm-gray); }
+.upload-zone-sub { font-size: 10px; color: var(--warm-gray); margin-top: 3px; }
+
+.uploaded-file {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 12px; border: 1px solid var(--rule); background: white; margin-top: 6px;
+  animation: fadeIn 0.15s ease;
+}
+.uploaded-file-left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.uploaded-file-name { font-size: 11px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.uploaded-file-size { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--warm-gray); flex-shrink: 0; }
+.file-type-badge { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; flex-shrink: 0; }
+.ft-pdf { background: #fde8e8; color: #c0392b; }
+.ft-doc { background: var(--blue-light); color: var(--blue); }
+.ft-img { background: var(--green-light); color: var(--green); }
+.ft-other { background: var(--gold-light); color: var(--gold); }
+
+/* EMAIL SEND BUTTON */
+.send-email-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid var(--rule); padding: 4px 9px;
+  cursor: pointer; font-size: 11px; transition: all 0.15s; color: var(--ink);
+  font-family: 'Instrument Sans', sans-serif;
+}
+.send-email-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-light); }
+.send-email-btn svg { flex-shrink: 0; }
+
+/* EMAIL TEMPLATE */
+.email-template-wrap { position: relative; }
+.email-template-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.email-template-actions { display: flex; gap: 8px; align-items: center; }
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: white; border: 1px solid var(--rule); padding: 5px 12px;
+  cursor: pointer; font-family: 'DM Mono', monospace; font-size: 9px;
+  letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.15s; color: var(--ink);
+}
+.copy-btn:hover { border-color: var(--ink); background: var(--paper); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-light); }
+textarea.template-area {
+  width: 100%; border: 1px solid var(--rule); padding: 14px;
+  font-family: 'Instrument Sans', sans-serif; font-size: 12px; color: var(--ink);
+  background: white; resize: vertical; min-height: 160px; outline: none;
+  transition: border-color 0.15s; line-height: 1.75; tab-size: 2;
+}
+textarea.template-area:focus { border-color: var(--ink); }
+
+/* COMPOSE MODAL */
+.compose-modal { width: 580px; }
+.compose-field { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.compose-field-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--warm-gray); width: 60px; flex-shrink: 0; padding-top: 2px; }
+.compose-field-val { flex: 1; font-size: 13px; word-break: break-all; }
+.compose-attachments { margin-top: 14px; }
+.attach-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--rule); background: #faf8f5; margin-bottom: 5px; font-size: 12px; }
+.attach-icon { font-size: 14px; }
+.attach-tip { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--warm-gray); letter-spacing: 0.06em; margin-top: 8px; }
+.compose-body-preview { margin-top: 14px; background: #faf8f5; border: 1px solid var(--rule); padding: 14px; font-size: 12px; line-height: 1.75; white-space: pre-wrap; max-height: 200px; overflow-y: auto; color: var(--ink); font-family: 'Instrument Sans', sans-serif; }
+.compose-open-btn { background: var(--blue); color: white; border: none; padding: 10px 22px; font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.compose-open-btn:hover { background: #224470; }
+
 /* TOAST */
 .toast { position: fixed; bottom: 28px; right: 28px; z-index: 300; background: var(--ink); color: white; padding: 11px 18px; font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em; border-left: 3px solid var(--green); animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.3s forwards; pointer-events: none; }
 @keyframes slideIn { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: translateX(0); } }
@@ -382,10 +451,150 @@ textarea.notes-area:focus { border-color: var(--ink); }
       </div>
       <div class="form-actions"><button class="btn btn-primary" onclick="addDoc()">Save Document</button><button class="btn btn-outline" onclick="toggleAddDocForm()">Cancel</button></div>
     </div>
-    <div class="disc-panel active" id="disc-arch"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-arch"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-arch"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-arch" placeholder="Target firms, strategy, talking points…" oninput="saveNote('arch',this.value)"></textarea></div></div>
-    <div class="disc-panel" id="disc-la"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-la"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-la"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-la" placeholder="Target firms, ecological focus, conferences…" oninput="saveNote('la',this.value)"></textarea></div></div>
-    <div class="disc-panel" id="disc-ai"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-ai"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-ai"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-ai" placeholder="GitHub, LinkedIn, research interests, target companies…" oninput="saveNote('ai',this.value)"></textarea></div></div>
-    <div class="disc-panel" id="disc-acad"><div class="grid-2"><div class="card"><div class="card-title">Documents</div><div class="doc-list" id="docs-acad"></div></div><div class="card"><div class="card-title">Contacts / Email List</div><table class="email-table"><thead><tr><th></th><th>Name</th><th>Institution</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-acad"></tbody></table></div></div><div class="card"><div class="card-title">Notes</div><textarea class="notes-area" id="notes-acad" placeholder="Research statement, target positions, conferences…" oninput="saveNote('acad',this.value)"></textarea></div></div>
+
+    <!-- ARCHITECTURE -->
+    <div class="disc-panel active" id="disc-arch">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Documents</div>
+          <div class="doc-list" id="docs-arch"></div>
+          <div class="upload-zone" id="upload-arch" ondragover="dragOver(event,'arch')" ondragleave="dragLeave(event,'arch')" ondrop="dropFile(event,'arch')">
+            <input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" onchange="handleFileInput(event,'arch')">
+            <div class="upload-zone-icon">📎</div>
+            <div class="upload-zone-text">Upload Files</div>
+            <div class="upload-zone-sub">Drag & drop or click — PDF, DOC, IMG</div>
+          </div>
+          <div id="uploads-arch"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contacts / Email List</div>
+          <table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-arch"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="email-template-header">
+          <div class="card-title" style="margin:0">Email Template</div>
+          <div class="email-template-actions">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--warm-gray);letter-spacing:0.06em;">Used when composing emails to contacts</span>
+            <button class="copy-btn" id="copy-btn-arch" onclick="copyTemplate('arch')">⎘ Copy</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Subject line</div>
+          <input class="form-input" id="tmpl-subject-arch" placeholder="e.g. Architecture Position Inquiry — [Your Name]" oninput="saveTemplateSubject('arch',this.value)" style="margin-bottom:12px;width:100%;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Body</div>
+          <textarea class="template-area" id="tmpl-arch" placeholder="Dear [Name],&#10;&#10;I am writing to inquire about…&#10;&#10;Please find my CV and portfolio attached.&#10;&#10;Best regards,&#10;[Your Name]" oninput="saveNote('tmpl-arch',this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANDSCAPE ARCHITECTURE -->
+    <div class="disc-panel" id="disc-la">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Documents</div>
+          <div class="doc-list" id="docs-la"></div>
+          <div class="upload-zone" id="upload-la" ondragover="dragOver(event,'la')" ondragleave="dragLeave(event,'la')" ondrop="dropFile(event,'la')">
+            <input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" onchange="handleFileInput(event,'la')">
+            <div class="upload-zone-icon">📎</div>
+            <div class="upload-zone-text">Upload Files</div>
+            <div class="upload-zone-sub">Drag & drop or click — PDF, DOC, IMG</div>
+          </div>
+          <div id="uploads-la"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contacts / Email List</div>
+          <table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-la"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="email-template-header">
+          <div class="card-title" style="margin:0">Email Template</div>
+          <div class="email-template-actions">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--warm-gray);letter-spacing:0.06em;">Used when composing emails to contacts</span>
+            <button class="copy-btn" id="copy-btn-la" onclick="copyTemplate('la')">⎘ Copy</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Subject line</div>
+          <input class="form-input" id="tmpl-subject-la" placeholder="e.g. Landscape Architecture Position Inquiry — [Your Name]" oninput="saveTemplateSubject('la',this.value)" style="margin-bottom:12px;width:100%;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Body</div>
+          <textarea class="template-area" id="tmpl-la" placeholder="Dear [Name],&#10;&#10;I am writing to inquire about opportunities in landscape architecture…&#10;&#10;Please find my CV and portfolio attached.&#10;&#10;Best regards,&#10;[Your Name]" oninput="saveNote('tmpl-la',this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI / TECH -->
+    <div class="disc-panel" id="disc-ai">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Documents</div>
+          <div class="doc-list" id="docs-ai"></div>
+          <div class="upload-zone" id="upload-ai" ondragover="dragOver(event,'ai')" ondragleave="dragLeave(event,'ai')" ondrop="dropFile(event,'ai')">
+            <input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" onchange="handleFileInput(event,'ai')">
+            <div class="upload-zone-icon">📎</div>
+            <div class="upload-zone-text">Upload Files</div>
+            <div class="upload-zone-sub">Drag & drop or click — PDF, DOC, IMG</div>
+          </div>
+          <div id="uploads-ai"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contacts / Email List</div>
+          <table class="email-table"><thead><tr><th></th><th>Name</th><th>Org</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-ai"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="email-template-header">
+          <div class="card-title" style="margin:0">Email Template</div>
+          <div class="email-template-actions">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--warm-gray);letter-spacing:0.06em;">Used when composing emails to contacts</span>
+            <button class="copy-btn" id="copy-btn-ai" onclick="copyTemplate('ai')">⎘ Copy</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Subject line</div>
+          <input class="form-input" id="tmpl-subject-ai" placeholder="e.g. AI Research / Software Role Inquiry — [Your Name]" oninput="saveTemplateSubject('ai',this.value)" style="margin-bottom:12px;width:100%;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Body</div>
+          <textarea class="template-area" id="tmpl-ai" placeholder="Dear [Name],&#10;&#10;I am writing to express interest in AI/tech opportunities…&#10;&#10;My portfolio and CV are linked below.&#10;&#10;Best,&#10;[Your Name]" oninput="saveNote('tmpl-ai',this.value)"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACADEMIA -->
+    <div class="disc-panel" id="disc-acad">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Documents</div>
+          <div class="doc-list" id="docs-acad"></div>
+          <div class="upload-zone" id="upload-acad" ondragover="dragOver(event,'acad')" ondragleave="dragLeave(event,'acad')" ondrop="dropFile(event,'acad')">
+            <input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.zip" onchange="handleFileInput(event,'acad')">
+            <div class="upload-zone-icon">📎</div>
+            <div class="upload-zone-text">Upload Files</div>
+            <div class="upload-zone-sub">Drag & drop or click — PDF, DOC, IMG</div>
+          </div>
+          <div id="uploads-acad"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Contacts / Email List</div>
+          <table class="email-table"><thead><tr><th></th><th>Name</th><th>Institution</th><th>Email</th><th>Notes</th><th></th></tr></thead><tbody id="contacts-acad"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="email-template-header">
+          <div class="card-title" style="margin:0">Email Template</div>
+          <div class="email-template-actions">
+            <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--warm-gray);letter-spacing:0.06em;">Used when composing emails to contacts</span>
+            <button class="copy-btn" id="copy-btn-acad" onclick="copyTemplate('acad')">⎘ Copy</button>
+          </div>
+        </div>
+        <div style="margin-top:12px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Subject line</div>
+          <input class="form-input" id="tmpl-subject-acad" placeholder="e.g. Academic Position / Research Inquiry — [Your Name]" oninput="saveTemplateSubject('acad',this.value)" style="margin-bottom:12px;width:100%;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--warm-gray);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Body</div>
+          <textarea class="template-area" id="tmpl-acad" placeholder="Dear Professor [Name],&#10;&#10;I am writing to inquire about research and teaching opportunities…&#10;&#10;Please find my academic CV attached.&#10;&#10;Sincerely,&#10;[Your Name]" oninput="saveNote('tmpl-acad',this.value)"></textarea>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -451,7 +660,41 @@ textarea.notes-area:focus { border-color: var(--ink); }
 
 </main>
 
-<!-- MODALS -->
+<!-- EMAIL COMPOSE MODAL -->
+<div class="modal-backdrop" id="compose-modal">
+  <div class="modal compose-modal">
+    <h2>Compose Email</h2>
+    <div id="compose-fields">
+      <div class="compose-field">
+        <div class="compose-field-label">To</div>
+        <div class="compose-field-val" id="compose-to" style="font-weight:500;"></div>
+      </div>
+      <div class="compose-field">
+        <div class="compose-field-label">Subject</div>
+        <div class="compose-field-val" id="compose-subject" style="color:var(--warm-gray);"></div>
+      </div>
+    </div>
+
+    <div class="compose-attachments">
+      <div class="card-title" style="margin-bottom:10px;">Attachments — Ready Documents</div>
+      <div id="compose-attach-list"></div>
+      <div class="attach-tip">ℹ️ Due to browser security, files cannot be auto-attached via mailto. After clicking "Open in Mail", manually drag these files into your email client.</div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="card-title" style="margin-bottom:8px;">Body Preview</div>
+      <div class="compose-body-preview" id="compose-body-preview"></div>
+    </div>
+
+    <div class="modal-footer" style="justify-content:space-between;align-items:center;">
+      <button class="copy-btn" id="compose-copy-btn" onclick="copyComposedEmail()">⎘ Copy Body</button>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-outline" onclick="closeModals()">Cancel</button>
+        <button class="compose-open-btn" id="compose-mailto-btn" onclick="openMailto()">✉ Open in Mail App</button>
+      </div>
+    </div>
+  </div>
+</div>
 <div class="modal-backdrop" id="add-job-modal">
   <div class="modal">
     <h2>Add Application</h2>
@@ -802,15 +1045,167 @@ function deleteContact(disc,id){S.contacts[disc]=S.contacts[disc].filter(c=>c.id
 function renderContacts(disc){
   const tb=document.getElementById('contacts-'+disc); if(!tb)return;
   const list=S.contacts[disc]||[];
-  if(!list.length){tb.innerHTML=`<tr><td colspan="6" style="text-align:center;padding:18px;color:var(--warm-gray);font-size:12px;">No contacts. Click "+ Add Contact" above.</td></tr>`;return;}
+  if(!list.length){tb.innerHTML=`<tr><td colspan="7" style="text-align:center;padding:18px;color:var(--warm-gray);font-size:12px;">No contacts. Click "+ Add Contact" above.</td></tr>`;return;}
   tb.innerHTML=list.map(c=>`<tr>
     <td><div class="contact-avatar">${c.name.charAt(0).toUpperCase()}</div></td>
     <td style="font-weight:500;">${c.name}</td>
     <td style="color:var(--warm-gray);">${c.org||'—'}</td>
     <td><a href="mailto:${c.email}" style="color:var(--blue);font-family:'DM Mono',monospace;font-size:10px;">${c.email||'—'}</a></td>
-    <td style="color:var(--warm-gray);">${c.notes||'—'}</td>
+    <td style="color:var(--warm-gray);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.notes||'—'}</td>
+    <td>
+      <button class="send-email-btn" onclick="openEmailCompose('${disc}','${c.id}')" title="Compose email to ${c.name}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+        Send
+      </button>
+    </td>
     <td><button class="icon-btn del" onclick="deleteContact('${disc}','${c.id}')">✕</button></td>
   </tr>`).join('');
+}
+
+// ─────────────────────────────────────────────
+// FILE UPLOAD
+// ─────────────────────────────────────────────
+const uploadedFiles = {arch:{},la:{},ai:{},acad:{}}; // id → File
+
+function fileTypeBadge(name) {
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  if(['pdf'].includes(ext)) return '<span class="file-type-badge ft-pdf">PDF</span>';
+  if(['doc','docx'].includes(ext)) return '<span class="file-type-badge ft-doc">DOC</span>';
+  if(['jpg','jpeg','png','gif','webp'].includes(ext)) return '<span class="file-type-badge ft-img">IMG</span>';
+  return '<span class="file-type-badge ft-other">'+ext.toUpperCase()+'</span>';
+}
+function fmtSize(b){ if(b<1024)return b+'B'; if(b<1048576)return (b/1024).toFixed(1)+'KB'; return (b/1048576).toFixed(1)+'MB'; }
+
+function handleFileInput(e,disc){ Array.from(e.target.files).forEach(f=>addUploadedFile(disc,f)); e.target.value=''; }
+function dragOver(e,disc){ e.preventDefault(); document.getElementById('upload-'+disc).classList.add('drag-over'); }
+function dragLeave(e,disc){ document.getElementById('upload-'+disc).classList.remove('drag-over'); }
+function dropFile(e,disc){ e.preventDefault(); document.getElementById('upload-'+disc).classList.remove('drag-over'); Array.from(e.dataTransfer.files).forEach(f=>addUploadedFile(disc,f)); }
+
+function addUploadedFile(disc,file){
+  const id=uid();
+  if(!uploadedFiles[disc]) uploadedFiles[disc]={};
+  uploadedFiles[disc][id]=file;
+  renderUploadedFiles(disc);
+  toast(`"${file.name}" added.`);
+}
+function removeUploadedFile(disc,id){
+  delete uploadedFiles[disc][id];
+  renderUploadedFiles(disc);
+}
+function renderUploadedFiles(disc){
+  const c=document.getElementById('uploads-'+disc); if(!c)return;
+  const files=uploadedFiles[disc]||{};
+  const entries=Object.entries(files);
+  if(!entries.length){ c.innerHTML=''; return; }
+  c.innerHTML=entries.map(([id,f])=>`
+    <div class="uploaded-file">
+      <div class="uploaded-file-left">
+        ${fileTypeBadge(f.name)}
+        <span class="uploaded-file-name" title="${f.name}">${f.name}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <span class="uploaded-file-size">${fmtSize(f.size)}</span>
+        <button class="icon-btn del" onclick="removeUploadedFile('${disc}','${id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────
+// EMAIL COMPOSE
+// ─────────────────────────────────────────────
+let _composeMailto = '';
+let _composeBody = '';
+
+function openEmailCompose(disc, contactId){
+  const contact=(S.contacts[disc]||[]).find(c=>c.id===contactId);
+  if(!contact){ toast('Contact not found.','#c4593a'); return; }
+
+  // Gather "ready" named docs
+  const readyDocs=(S.docs[disc]||[]).filter(d=>d.status==='ready');
+  // Gather uploaded files
+  const files=Object.values(uploadedFiles[disc]||{});
+
+  // Build subject and body from template
+  const subject=(S.tmplSubjects&&S.tmplSubjects[disc])||`Inquiry — ${disc==='arch'?'Architecture':disc==='la'?'Landscape Architecture':disc==='ai'?'AI/Tech':'Academia'} Position`;
+  const bodyTemplate=(S.notes['tmpl-'+disc])||'Dear [Name],\n\nI am writing to inquire about opportunities.\n\nPlease find my documents attached.\n\nBest regards,\n[Your Name]';
+
+  // Personalise body: replace [Name] with contact name
+  const body=bodyTemplate.replace(/\[Name\]/g, contact.name.split(' ')[0]);
+
+  // Build attachment mention in body
+  const attachLines=[];
+  if(readyDocs.length) readyDocs.forEach(d=>attachLines.push('• '+d.name+' ('+d.type+')'));
+  if(files.length) files.forEach(f=>attachLines.push('• '+f.name));
+  const bodyWithAttach = attachLines.length
+    ? body+'\n\n— Attachments —\n'+attachLines.join('\n')
+    : body;
+
+  _composeBody = bodyWithAttach;
+  _composeMailto = `mailto:${encodeURIComponent(contact.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyWithAttach)}`;
+
+  // Populate modal
+  document.getElementById('compose-to').textContent=`${contact.name} <${contact.email||'(no email)'}> — ${contact.org||''}`;
+  document.getElementById('compose-subject').textContent=subject;
+  document.getElementById('compose-body-preview').textContent=bodyWithAttach;
+
+  // Attachments list
+  const attachEl=document.getElementById('compose-attach-list');
+  const allAttach=[
+    ...readyDocs.map(d=>({name:d.name+' · '+d.type,icon:'📄',tag:'Ready doc'})),
+    ...files.map(f=>({name:f.name,icon:'📎',tag:fmtSize(f.size)}))
+  ];
+  if(!allAttach.length){
+    attachEl.innerHTML=`<div style="font-size:12px;color:var(--warm-gray);padding:8px 0;">No ready documents or uploaded files. Mark documents as "Ready" or upload files above.</div>`;
+  } else {
+    attachEl.innerHTML=allAttach.map(a=>`<div class="attach-item"><span class="attach-icon">${a.icon}</span><span style="flex:1;">${a.name}</span><span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--warm-gray);">${a.tag}</span></div>`).join('');
+  }
+
+  openModal('compose-modal');
+}
+
+function openMailto(){
+  if(!_composeMailto){ toast('Nothing to open.','#c4593a'); return; }
+  window.location.href=_composeMailto;
+}
+
+function copyComposedEmail(){
+  if(!_composeBody)return;
+  navigator.clipboard.writeText(_composeBody).then(()=>{
+    const btn=document.getElementById('compose-copy-btn');
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='⎘ Copy Body';btn.classList.remove('copied');},2000);
+  });
+}
+
+// ─────────────────────────────────────────────
+// EMAIL TEMPLATE
+// ─────────────────────────────────────────────
+function copyTemplate(disc){
+  const ta=document.getElementById('tmpl-'+disc);
+  const subj=document.getElementById('tmpl-subject-'+disc);
+  if(!ta)return;
+  const txt=(subj?`Subject: ${subj.value}\n\n`:'')+(ta.value||'(no template yet)');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.getElementById('copy-btn-'+disc);
+    btn.textContent='✓ Copied!'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='⎘ Copy';btn.classList.remove('copied');},2000);
+    toast('Template copied to clipboard.');
+  });
+}
+
+function saveTemplateSubject(disc,val){
+  if(!S.tmplSubjects) S.tmplSubjects={};
+  S.tmplSubjects[disc]=val; save();
+}
+
+function loadTemplates(){
+  ['arch','la','ai','acad'].forEach(d=>{
+    const ta=document.getElementById('tmpl-'+d);
+    const si=document.getElementById('tmpl-subject-'+d);
+    if(ta) ta.value=S.notes['tmpl-'+d]||'';
+    if(si) si.value=(S.tmplSubjects&&S.tmplSubjects[d])||'';
+  });
 }
 
 // ─────────────────────────────────────────────
@@ -855,10 +1250,9 @@ function renderDocs(disc){
 // ─────────────────────────────────────────────
 function saveNote(key,val){S.notes[key]=val;save();}
 function loadNotes(){
-  Object.keys(S.notes).forEach(k=>{
-    const el=document.getElementById(k==='overview'?'overview-notes':'notes-'+k);
-    if(el) el.value=S.notes[k]||'';
-  });
+  // Overview notes only (discipline notes are now email templates, loaded in loadTemplates)
+  const el=document.getElementById('overview-notes');
+  if(el) el.value=S.notes['overview']||'';
 }
 
 // ─────────────────────────────────────────────
@@ -887,7 +1281,7 @@ function init(){
   initGreeting();
   renderJobs(); renderRecentApps(); updateStats();
   renderCalendar(); renderOverviewDeadlines();
-  loadNotes();
+  loadNotes(); loadTemplates();
   // Restore discipline
   const disc=S.activeDisc||'arch';
   document.querySelectorAll('.disc-panel').forEach(p=>p.classList.remove('active'));
